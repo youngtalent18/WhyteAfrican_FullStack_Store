@@ -87,6 +87,7 @@ const FeaturedProducts = () => {
                   className="bg-slate-800 rounded-xl p-3 mx-2 hover:scale-[1.03] transition-all duration-200 block"
                 >
                   <img
+                    loading="lazy"
                     src={imageUrl}
                     alt={product?.name || "product"}
                     className="h-40 w-full object-cover rounded-lg"

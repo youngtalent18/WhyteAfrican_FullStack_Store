@@ -89,6 +89,7 @@ const ProductDetails = () => {
         {/* IMAGE */}
         <div className="relative bg-slate-800 p-4 rounded-xl">
           <img
+            loading="lazy"
             src={product.image?.replace(
               "/upload/",
               "/upload/w_500,q_auto,f_auto/"

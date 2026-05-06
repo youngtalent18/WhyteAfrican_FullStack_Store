@@ -61,6 +61,7 @@ const ProductCard = ({ product }) => {
       {/* IMAGE */}
       <div className="relative overflow-hidden">
         <img
+          loading="lazy"
           src={
             product?.image?.replace(
               "/upload/",

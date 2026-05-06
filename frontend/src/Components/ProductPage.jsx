@@ -43,6 +43,7 @@ const ProductPage = () => {
                 <td className="px-6 py-3">
                   <div className="flex items-center gap-3">
                     <img
+                      loading="lazy"
                       className="h-10 w-10 rounded-full object-cover"
                       src={product.image.replace(
                         "/upload/",
@@ -100,6 +101,7 @@ const ProductPage = () => {
           >
             <div className="flex gap-3 items-center">
               <img
+                loading="lazy"
                 src={product.image.replace(
                   "/upload/",
                   "/upload/w_300,q_auto,f_auto/"

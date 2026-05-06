@@ -7,6 +7,7 @@ const CategoryCard = ({ href, name, imageUrl }) => {
       className="block bg-white rounded-lg overflow-hidden hover:-translate-y-1 transition"
     >
       <img
+        loading="lazy"
         src={imageUrl}
         alt={name}
         className="w-full h-32 object-cover"
