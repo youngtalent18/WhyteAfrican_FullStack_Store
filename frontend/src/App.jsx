@@ -25,12 +25,14 @@ import { Loader } from "lucide-react";
 
 import userStore from "./store/userStore.js";
 import cartStore from "./store/cartStore.js";
+import useProductStore from "./store/productStore.js";
 
 function AppContent() {
   const location = useLocation();
 
   const { user, checkAuth, checkingAuth } = userStore();
   const { initializeStore } = cartStore();
+  const {fetchAllProducts} = useProductStore();
 
   const [search, setSearch] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
@@ -45,6 +47,15 @@ function AppContent() {
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
+  useEffect(() => {
+    fetch("https://whyteafrican-fullstack-store.onrender.com/api/health")
+      .then(() => {
+        // THEN load products
+        fetchAllProducts();
+      })
+      .catch(console.error);
+  }, [fetchAllProducts]);
 
   // ================= LOGIN MODAL HANDLER =================
   useEffect(() => {
