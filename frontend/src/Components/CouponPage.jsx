@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import cartStore from "../store/cartStore";
 import api from "../api/axios";
 import toast from "react-hot-toast";
+import { Loader } from "lucide-react";
 
 const CouponDashboard = () => {
   const { coupons, getAllCoupons, toggleCoupon, deleteCoupon } = cartStore();
@@ -130,7 +131,7 @@ const CouponDashboard = () => {
                   : "bg-emerald-500 hover:bg-emerald-600"
               }`}
           >
-            {loading ? "Creating..." : "Create Coupon"}
+            {loading ? <p className="flex items-center justify-center gap-2"><Loader className="animate-spin"/>"Creating..."</p> : "Create Coupon"}
           </button>
         </form>
 
