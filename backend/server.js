@@ -33,7 +33,7 @@ app.use(
 );
 app.use(express.json({ limit: "10mb" }));
 
-app.get("/health", (req, res) => {
+app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok", message: "Server is running" });
 });
 
