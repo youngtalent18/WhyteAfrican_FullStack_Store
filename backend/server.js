@@ -17,7 +17,7 @@ dotenv.config();
 const app = express();
 app.use(cors({
     origin: [
-        "https://whyte-african-full-stack-store.vercel.app/",
+        "https://whyte-african-full-stack-store.vercel.app",
         process.env.CLIENT_URL
     ],
     credentials: true,

@@ -2,7 +2,7 @@ import { sendEmail } from "../utils/sendMail.js";
 
 export const sendOrderEmailToAdmin = async (order, user) => {
   return sendEmail({
-    to: process.env.EMAIL_USER,
+    to: process.env.ADMIN_EMAIL,
     subject: `🔥 New Order - ${order.paymentReference}`,
     html: `
     <div style="font-family:Arial;padding:20px;">
