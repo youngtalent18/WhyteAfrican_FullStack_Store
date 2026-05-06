@@ -30,7 +30,12 @@ const PORT = process.env.PORT || 3000;
 app.use(
   "/api/payment/webhook",
   express.raw({ type: "*/*" })
-);app.use(express.json({ limit: "10mb" }));
+);
+app.use(express.json({ limit: "10mb" }));
+
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok", message: "Server is running" });
+});
 
 app.use('/api/auth', userRoute);
 app.use('/api/products', productRoute);
