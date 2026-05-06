@@ -150,13 +150,13 @@ export const logoutUser = async (req, res) => {
     try {
         res.clearCookie("accessToken", {
             httpOnly: true,
-            sameSite: "strict",
+            sameSite: "none",
             secure: process.env.NODE_ENV === "production"
         });
 
         res.clearCookie("refreshToken", {
             httpOnly: true,
-            sameSite: "strict",
+            sameSite: "none",
             secure: process.env.NODE_ENV === "production"
         });
 
@@ -184,7 +184,7 @@ export async function refresh_token(req,res){
         const {accessToken} = jwt.sign({userId: decoded.userId}, process.env.ACCESS_TOKEN, {expiresIn: "15m"});
 
         res.cookie("accessToken", accessToken, {
-            sameSite: "strict",
+            sameSite: "none",
             httpOnly: true,
             secure: process.env.NODE_ENV !== "development",
             maxAge: 15*60*1000,
