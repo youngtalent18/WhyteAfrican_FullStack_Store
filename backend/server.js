@@ -19,7 +19,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://whyte-african-full-stack-store.vercel.app",
+      "https://whyte-african-full-stack-store-clfv5wx36.vercel.app/",
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
