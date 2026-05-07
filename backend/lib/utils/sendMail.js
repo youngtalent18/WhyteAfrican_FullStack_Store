@@ -1,21 +1,29 @@
-import sgMail from "@sendgrid/mail";
-
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+import nodemailer from "nodemailer";
 
 export const sendEmail = async ({ to, subject, html }) => {
   try {
-    const msg = {
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const info = await transporter.sendMail({
+      from: `WhyteAfrican Shop <${process.env.EMAIL_USER}>`,
       to,
-      from: "stephenanti63@gmail.com", // must verify sender later
       subject,
       html,
-    };
+    });
 
-    const response = await sgMail.send(msg);
-    console.log("Email sent:", response);
-    return response;
+    console.log("EMAIL SENT:", info.messageId);
+
+    return info;
   } catch (error) {
-    console.error("Email error:", error.response?.body || error);
-    throw new Error("Email failed");
+    console.error("EMAIL ERROR:", error);
+    throw error;
   }
 };
