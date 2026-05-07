@@ -15,13 +15,17 @@ dns.setServers(["8.8.8.8", "1.1.1.1"]);
 dotenv.config();
 
 const app = express();
-app.use(cors({
+app.use(
+  cors({
     origin: [
-        "https://whyte-african-full-stack-store.vercel.app",
-        process.env.CLIENT_URL
+      "http://localhost:5173",
+      "https://whyte-african-full-stack-store.vercel.app",
     ],
     credentials: true,
-}));
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(cookieParser());
 app.use(express.urlencoded({extended: true}));
 
