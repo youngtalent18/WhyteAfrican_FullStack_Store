@@ -69,8 +69,9 @@ const OrderSummary = () => {
       // redirect to Paystack
       window.location.href = url;
     } catch (error) {
-      toast.error("PAYMENT ERROR:", error.response?.data || error.message);
-
+      toast.error( error.response?.data?.message || error.message);
+      console.error("Payment initialization failed:", error);
+    } finally {
       isProcessing.current = false;
       setLoading(false);
     }
