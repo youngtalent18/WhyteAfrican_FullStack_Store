@@ -40,7 +40,7 @@ const PaymentSuccess = () => {
     };
 
     verify();
-  }, [clearCart, removeCoupon, navigate]); // ✅ include dependency
+  }, [clearCart, removeCoupon, navigate]); // ✅ included dependency
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4">

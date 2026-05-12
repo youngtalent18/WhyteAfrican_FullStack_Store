@@ -15,6 +15,7 @@ dns.setServers(["8.8.8.8", "1.1.1.1"]);
 dotenv.config();
 
 const app = express();
+app.use(cookieParser());
 app.use(
   cors({
     origin: [
@@ -25,14 +26,12 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-app.use(cookieParser());
 app.use(express.urlencoded({extended: true}));
 
 
 const PORT = process.env.PORT || 3000;
 
 
-// ✅ ADD THIS ABOVE routes
 app.use(
   "/api/payment/webhook",
   express.raw({ type: "*/*" })

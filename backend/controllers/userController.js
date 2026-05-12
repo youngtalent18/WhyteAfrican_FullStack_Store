@@ -141,7 +141,7 @@ export const loginUser = async (req, res) => {
 };
 
 export const logoutUser = async (req, res) => {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.headers.authorization;
     
     if(refreshToken){
         await redis.del(`refresh_token:${req.user._id}`);
@@ -169,7 +169,7 @@ export const logoutUser = async (req, res) => {
 
 export async function refresh_token(req,res){
     try{
-        const refreshToken = req.cookies.refreshToken;
+        const refreshToken = req.headers.authorization;
 
         if(!refreshToken){
             return res.status(401).json({success: false, message: "No refresh token provided"});
