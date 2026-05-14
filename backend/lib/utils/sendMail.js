@@ -1,15 +1,11 @@
 import nodemailer from "nodemailer";
-import dns from "dns";
-
-dns.setDefaultResultOrder("ipv4first");
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: process.env.EMAIL_HOST,
 
-  port: 465,
-  secure: true,
+  port: Number(process.env.EMAIL_PORT),
 
-  family: 4,
+  secure: false,
 
   auth: {
     user: process.env.EMAIL_USER,
@@ -27,14 +23,14 @@ export const sendEmail = async ({
   html,
 }) => {
   try {
-    // VERIFY SMTP CONNECTION
+    // VERIFY CONNECTION
     await transporter.verify();
 
     console.log("SMTP READY");
 
     const info =
       await transporter.sendMail({
-        from: `WhyteAfrican Shop <${process.env.EMAIL_USER}>`,
+        from: `"WhyteAfrican Shop" <${process.env.EMAIL_USER}>`,
         to,
         subject,
         html,
