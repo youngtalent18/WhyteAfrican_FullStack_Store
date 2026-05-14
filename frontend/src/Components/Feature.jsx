@@ -29,15 +29,15 @@ const Feature = () => {
   ];
 
   const colorMap = {
-    green: "bg-green-500/20 text-green-400",
-    blue: "bg-blue-500/20 text-blue-400",
-    purple: "bg-purple-500/20 text-purple-400",
-    orange: "bg-orange-500/20 text-orange-400",
+    green: "bg-green-500/15 text-green-400 ring-green-500/30",
+    blue: "bg-blue-500/15 text-blue-400 ring-blue-500/30",
+    purple: "bg-purple-500/15 text-purple-400 ring-purple-500/30",
+    orange: "bg-orange-500/15 text-orange-400 ring-orange-500/30",
   };
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-12">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
 
         {features.map((f, i) => {
           const Icon = f.icon;
@@ -46,28 +46,40 @@ const Feature = () => {
             <div
               key={i}
               className="
+                group relative
                 flex items-center gap-4
                 p-4 sm:p-5
                 rounded-2xl
-                bg-slate-800/80
-                border border-slate-700
+                bg-linear-to-b from-slate-850 to-slate-900
+                border border-slate-800/70
                 shadow-md
-                hover:shadow-xl
+                hover:shadow-2xl hover:shadow-black/40
                 hover:-translate-y-1
                 transition-all duration-300
+                overflow-hidden
               "
             >
+              {/* subtle glow background */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-300 bg-linear-to-r from-white/4 to-transparent" />
+
               {/* ICON */}
-              <div className={`p-3 rounded-full ${colorMap[f.color]}`}>
+              <div
+                className={`
+                  relative z-10
+                  p-3 rounded-xl
+                  ring-1
+                  ${colorMap[f.color]}
+                `}
+              >
                 <Icon size={22} />
               </div>
 
               {/* TEXT */}
-              <div className="min-w-0">
-                <h3 className="text-white font-semibold text-sm sm:text-base">
+              <div className="relative z-10 min-w-0">
+                <h3 className="text-white font-semibold text-sm sm:text-base tracking-tight">
                   {f.title}
                 </h3>
-                <p className="text-gray-400 text-xs sm:text-sm truncate">
+                <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
                   {f.desc}
                 </p>
               </div>
