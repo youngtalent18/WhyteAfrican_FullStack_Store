@@ -120,12 +120,12 @@ const ProductCard = ({ product }) => {
         {/* PRICE */}
         <div className="flex gap-2 items-center">
           <span className="text-indigo-400 font-semibold">
-            GHC {discountedPrice.toFixed(2)}
+            GHC{discountedPrice.toFixed(2)}
           </span>
 
           {hasDiscount && (
             <span className="text-gray-500 line-through text-xs">
-              GHC {price.toFixed(2)}
+              GHC{price.toFixed(2)}
             </span>
           )}
         </div>
@@ -143,7 +143,7 @@ const ProductCard = ({ product }) => {
                   }}
                   className={`px-2 py-1 text-xs rounded border transition ${
                     selectedSize === size
-                      ? "bg-indigo-600 border-indigo-600 text-white"
+                      ? "bg-indigo-500 border-indigo-500 text-white"
                       : "border-gray-600 text-gray-300 hover:border-gray-400"
                   }`}
                 >
@@ -168,7 +168,7 @@ const ProductCard = ({ product }) => {
               product.sizes.length > 0 &&
               !selectedSize)
               ? "bg-gray-600 cursor-not-allowed"
-              : "bg-indigo-600 hover:bg-indigo-500 text-white"
+              : "bg-indigo-500 hover:bg-indigo-400 text-white"
           }`}
         >
           {adding ? "Adding..." : "Add to Cart"}
