@@ -24,21 +24,15 @@ const Modal = ({ isModalOpen, setModalOpen, children }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
       onClick={() => setModalOpen(false)}
     >
       <div
         className="
-          relative
-          w-full
-          max-w-sm sm:max-w-md
-          max-h-[90vh]
-          overflow-y-auto
-          bg-slate-100
-          text-gray-900
-          rounded-xl sm:rounded-2xl
-          shadow-2xl
-          p-4 sm:p-6
+          relative w-full max-w-md
+          max-h-[90vh] overflow-y-auto
+          rounded-2xl
+          p-5 sm:p-6
         "
         onClick={(e) => e.stopPropagation()}
       >
@@ -47,17 +41,26 @@ const Modal = ({ isModalOpen, setModalOpen, children }) => {
           onClick={() => setModalOpen(false)}
           className="
             absolute top-3 right-3
-            text-gray-600 hover:text-black
-            text-xl sm:text-2xl
-            w-8 h-8 flex items-center justify-center
-            rounded-full hover:bg-gray-200
+
+            w-9 h-9
+            flex items-center justify-center
+
+            rounded-full
+            bg-slate-800/60
+            border border-slate-700
+
+            text-slate-300
+            hover:text-white
+            hover:bg-slate-700
+
             transition
           "
         >
           ✕
         </button>
 
-        <div className="mt-6 sm:mt-2">{children}</div>
+        {/* CONTENT */}
+        <div className="mt-4">{children}</div>
       </div>
     </div>
   );
