@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { toast } from "react-hot-toast";
 import api from "../api/axios.js";
-import cartStore from "./cartStore.js";
+import cartStore from "./cartStore.js"; // 🔥 IMPORTANT
 
 export const userStore = create((set) => ({
   user: null,
@@ -26,9 +26,7 @@ export const userStore = create((set) => ({
 
       set({ loading: false });
 
-      toast.success(
-        res.data.message || "Check your email to verify account"
-      );
+      toast.success(res.data.message || "Check your email to verify account");
 
       return res.data;
     } catch (error) {
@@ -36,8 +34,8 @@ export const userStore = create((set) => ({
 
       toast.error(
         error.response?.data?.message ||
-          error.message ||
-          "Registration failed"
+        error.message ||
+        "Registration failed"
       );
 
       console.log("Register error:", error);
@@ -54,39 +52,26 @@ export const userStore = create((set) => ({
         password,
       });
 
-      // ================= SAVE TOKEN =================
-      localStorage.setItem(
-        "token",
-        res.data.accessToken
-      );
-
-      // ================= CLEAR OLD CART =================
+      // 🔥 STEP 1: RESET OLD CART (CRITICAL)
       cartStore.getState().clearCart();
 
-      // ================= SET USER =================
+      // 🔥 STEP 2: SET USER
       set({
         user: res.data.user,
         loading: false,
       });
 
-      // ================= LOAD USER CART =================
+      // 🔥 STEP 3: LOAD USER-SPECIFIC CART
       await cartStore.getState().getCartItems();
 
-      toast.success("Login successful", {
-        duration: 3000,
-        id: "login-success",
-      });
+      toast.success("Login successful", { duration: 3000 }, {id: "login-success"});
 
       return res.data;
     } catch (error) {
       set({ loading: false });
 
       toast.error(
-        error.response?.data?.message || "Login failed",
-        {
-          duration: 3000,
-          id: "login-failed",
-        }
+        error.response?.data?.message || "Login failed", { duration: 3000 }, {id: "login-failed"}
       );
 
       console.log("Login error:", error);
@@ -100,28 +85,18 @@ export const userStore = create((set) => ({
     try {
       await api.post("/auth/logout");
 
-      // ================= REMOVE TOKEN =================
-      localStorage.removeItem("token");
-
-      // ================= CLEAR USER =================
+      // 🔥 STEP 1: CLEAR USER
       set({ user: null });
 
-      // ================= CLEAR CART =================
+      // 🔥 STEP 2: CLEAR CART + COUPON
       cartStore.getState().clearCart();
 
-      toast.success("Logged out", {
-        duration: 3000,
-        id: "logout-success",
-      });
+      toast.success("Logged out", { duration: 3000 }, {id: "logout-success"});
     } catch (error) {
       console.log("Logout error:", error);
 
       toast.error(
-        error.response?.data?.message || "Logout failed",
-        {
-          duration: 3000,
-          id: "logout-failed",
-        }
+        error.response?.data?.message || "Logout failed", { duration: 3000 }, {id: "logout-failed"}
       );
     }
   },
@@ -138,7 +113,7 @@ export const userStore = create((set) => ({
         checkingAuth: false,
       });
 
-      // ================= LOAD CART =================
+      // 🔥 IMPORTANT: load cart AFTER restoring session
       await cartStore.getState().getCartItems();
     } catch (error) {
       set({
@@ -146,10 +121,7 @@ export const userStore = create((set) => ({
         checkingAuth: false,
       });
 
-      // ================= CLEAR TOKEN =================
-      localStorage.removeItem("token");
-
-      // ================= CLEAR CART =================
+      // 🔥 ALSO CLEAR CART if not authenticated
       cartStore.getState().clearCart();
 
       console.log("Auth check failed:", error);
