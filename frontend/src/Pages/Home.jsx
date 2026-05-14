@@ -140,10 +140,9 @@ const Home = ({ search }) => {
           >
             {categories.map((cat) => (
               <div
-                key={cat.id}
                 className="w-full shrink-0 snap-center px-2"
               >
-                <CategoryCard {...cat} />
+                <CategoryCard key={cat.id} {...cat} />
               </div>
             ))}
           </div>
