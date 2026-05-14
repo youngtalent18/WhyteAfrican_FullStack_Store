@@ -24,7 +24,8 @@ const ProductDetails = () => {
         const res = await api.get(`/products/${id}`);
         setProduct(res.data);
       } catch (err) {
-        setError("Failed to load product",err);
+        console.error(err);
+        setError("Failed to load product");
       } finally {
         setLoading(false);
       }
@@ -33,15 +34,16 @@ const ProductDetails = () => {
     fetchProduct();
   }, [id]);
 
+  // Optional: auto-select first size (kept, but now consistent)
   useEffect(() => {
     if (product?.sizes?.length) {
-      setSelectedSize(product.sizes[0]); // first size only
+      setSelectedSize(product.sizes[0]);
     }
   }, [product]);
 
-  // ================= LOADING STATES =================
+  // ================= LOADING =================
   if (loading) {
-    return <div className="p-6 text-white">Loading...</div>;
+    return <div className="p-6 text-white animate-pulse">Loading product...</div>;
   }
 
   if (error) {
@@ -52,29 +54,35 @@ const ProductDetails = () => {
     return <div className="p-6 text-gray-400">Product not found</div>;
   }
 
-  // ================= PRICE LOGIC =================
-  const hasDiscount = product.discountPercentage > 0;
+  // ================= SAFE PRICING =================
+  const price = Number(product?.price || 0);
+  const discount = Number(product?.discountPercentage || 0);
+
+  const hasDiscount = discount > 0;
 
   const discountedPrice = hasDiscount
-    ? product.price - (product.price * product.discountPercentage) / 100
-    : product.price;
+    ? price - (price * discount) / 100
+    : price;
 
   // ================= ADD TO CART =================
   const handleAddToCart = () => {
     if (!user) {
-      toast.error("Login to add products to cart",{id: "login"});
+      toast.error("Login to add products to cart", {
+        id: "login-error",
+      });
       return;
     }
 
-    if (product.sizes?.length && !selectedSize) {
-      toast.error("Please select a size",{id: "size"});
-      return;
-    }
+    const sizeToUse = selectedSize || product.sizes?.[0] || null;
 
-    addToCart(product, selectedSize || null);
+    addToCart(product, sizeToUse);
 
-    toast.success(`${product.name} added to cart`,{id: "login"});
+    toast.success(`${product.name} added to cart`, {
+      id: "add-to-cart-success",
+    });
   };
+
+  const hasSizes = Array.isArray(product?.sizes) && product.sizes.length > 0;
 
   return (
     <div className="max-w-6xl mx-auto p-6 text-white">
@@ -90,17 +98,21 @@ const ProductDetails = () => {
         <div className="relative bg-slate-800 p-4 rounded-xl">
           <img
             loading="lazy"
-            src={product.image?.replace(
-              "/upload/",
-              "/upload/w_500,q_auto,f_auto/"
-            )}
+            src={
+              product.image
+                ? product.image.replace(
+                    "/upload/",
+                    "/upload/w_500,q_auto,f_auto/"
+                  )
+                : "/fallback.png"
+            }
             alt={product.name}
             className="w-full h-80 object-cover rounded-lg"
           />
 
           {hasDiscount && (
             <span className="absolute top-3 left-3 bg-red-600 px-2 py-1 text-sm rounded">
-              -{product.discountPercentage}%
+              -{discount}%
             </span>
           )}
         </div>
@@ -115,13 +127,13 @@ const ProductDetails = () => {
             </h1>
 
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-green-400 text-xl sm:text-2xl font-semibold">
+              <span className="text-indigo-400 text-xl sm:text-2xl font-semibold">
                 GHC {discountedPrice.toFixed(2)}
               </span>
 
               {hasDiscount && (
                 <span className="text-gray-400 line-through">
-                  GHC {product.price.toFixed(2)}
+                  GHC {price.toFixed(2)}
                 </span>
               )}
             </div>
@@ -131,8 +143,8 @@ const ProductDetails = () => {
             </p>
           </div>
 
-          {/* ================= SIZES ================= */}
-          {product.sizes?.length > 0 && (
+          {/* SIZES */}
+          {hasSizes && (
             <div>
               <p className="text-sm text-gray-400 mb-1">
                 Select Size
@@ -146,8 +158,8 @@ const ProductDetails = () => {
                     className={`px-4 py-2 rounded border text-sm transition
                       ${
                         selectedSize === size
-                          ? "bg-emerald-500 border-emerald-500 text-white"
-                          : "border-gray-600 text-gray-300 hover:border-emerald-400"
+                          ? "bg-indigo-600 border-indigo-500 text-white"
+                          : "border-gray-600 text-gray-300 hover:border-indigo-500"
                       }
                     `}
                   >
@@ -157,24 +169,17 @@ const ProductDetails = () => {
               </div>
 
               {selectedSize && (
-                <p className="text-xs text-emerald-400 mt-2">
+                <p className="text-xs text-indigo-400 mt-2">
                   Selected: {selectedSize}
                 </p>
               )}
             </div>
           )}
 
-          {/* ================= ADD TO CART ================= */}
+          {/* ADD TO CART */}
           <button
             onClick={handleAddToCart}
-            disabled={product.sizes?.length && !selectedSize}
-            className={`py-3 rounded-lg font-semibold transition active:scale-[0.98]
-              ${
-                product.sizes?.length && !selectedSize
-                  ? "bg-gray-600 cursor-not-allowed"
-                  : "bg-green-600 hover:bg-green-500 cursor-pointer"
-              }
-            `}
+            className="py-3 rounded-lg font-semibold bg-indigo-600 hover:bg-indigo-500 transition active:scale-[0.98]"
           >
             Add to Cart
           </button>
