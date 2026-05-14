@@ -134,14 +134,14 @@ const OrderSummary = () => {
           placeholder="Phone number (for delivery)"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          className="w-full p-2 rounded bg-slate-700 text-white border border-slate-600 outline-none"
+          className="w-full p-2 rounded bg-slate-800 text-white border border-slate-700 outline-none"
         />
 
         <textarea
           placeholder="Delivery address"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
-          className="w-full p-2 rounded bg-slate-700 text-white border border-slate-600 outline-none"
+          className="w-full p-2 rounded bg-slate-800 text-white border border-slate-700 outline-none"
         />
       </div>
 
