@@ -143,7 +143,7 @@ const Navbar = ({ search, setSearch, isModalOpen, setModalOpen, view, setView })
 
       {/* ================= MOBILE MENU ================= */}
       {menuOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 md:hidden">
+        <div className="fixed inset-0 z-60 bg-black/60 md:hidden">
 
           <div className="absolute left-0 top-0 w-[85%] max-w-sm h-full bg-slate-900 flex flex-col">
 

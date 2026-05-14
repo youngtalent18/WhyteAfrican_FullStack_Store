@@ -11,7 +11,7 @@ const BackButton = () => {
         fixed
         top-32 sm:top-30 lg:top-24
         left-4 sm:left-4
-        z-50
+        z-40
 
         flex items-center gap-1 sm:gap-2
 

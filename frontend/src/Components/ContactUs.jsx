@@ -5,7 +5,7 @@ const FloatingContact = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="fixed bottom-40 right-6 z-40 flex flex-col items-end gap-3">
+    <div className="fixed bottom-20 right-6 z-40 flex flex-col items-end gap-3">
 
       {/* ACTION MENU */}
       <div
