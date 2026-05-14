@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import cartStore from "../store/cartStore";
-import api from "../api/axios";
+import cartStore from "../../store/cartStore";
+import api from "../../api/axios";
 import toast from "react-hot-toast";
 import { Loader, Ticket } from "lucide-react";
 

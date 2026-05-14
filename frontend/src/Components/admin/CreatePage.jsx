@@ -10,7 +10,7 @@ import {
   Tag,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import useProductStore from "../store/productStore.js";
+import useProductStore from "../../store/productStore.js";
 
 const CreatePage = () => {
   const { loading, createProducts } = useProductStore();

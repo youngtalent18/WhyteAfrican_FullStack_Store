@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { Star, Trash } from "lucide-react";
-import useProductStore from "../store/productStore";
+import useProductStore from "../../store/productStore";
 
 const ProductPage = () => {
   const { products, deleteProduct, toggleFeatured } = useProductStore();
