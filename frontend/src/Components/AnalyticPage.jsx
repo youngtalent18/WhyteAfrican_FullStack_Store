@@ -82,10 +82,10 @@ const AdminDashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
 
         {[
-          { label: "Total Revenue", value: `GHC ${data?.totalRevenue || 0}` },
+          { label: "Total Revenue", value: `GHC ${data?.totalRevenue || 0}.toFixed(2)` },
           { label: "Total Orders", value: data?.totalOrders || 0 },
           { label: "Total Users", value: data?.totalUsers || 0 },
-          { label: "Total Discount", value: `GHC ${data?.totalDiscount || 0}` },
+          { label: "Total Discount", value: `GHC ${data?.totalDiscount || 0}.toFixed(2)` },
         ].map((item, i) => (
           <div
             key={i}
