@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { Loader, UserPlus } from "lucide-react";
 import userStore from "../store/userStore";
 
-const SignUp = ({ setView, setModalOpen}) => {
-
+const SignUp = ({ setView, setModalOpen }) => {
   const [err, setErr] = useState("");
 
   const [formData, setFormData] = useState({
@@ -19,29 +18,24 @@ const SignUp = ({ setView, setModalOpen}) => {
     e.preventDefault();
     setErr("");
 
-    // ================= VALIDATION =================
     if (!formData.name || !formData.email || !formData.password) {
       setErr("All fields are required");
-
       return;
     }
 
     if (formData.password.length < 6) {
       setErr("Password must be at least 6 characters");
-
       return;
     }
 
     const emailRegex = /\S+@\S+\.\S+/;
     if (!emailRegex.test(formData.email)) {
-      setErr("Enter a valid email address")
-
+      setErr("Enter a valid email address");
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
       setErr("Passwords do not match");
-
       return;
     }
 
@@ -49,7 +43,6 @@ const SignUp = ({ setView, setModalOpen}) => {
       const res = await register(formData);
 
       if (res) {
-
         setFormData({
           name: "",
           email: "",
@@ -62,7 +55,6 @@ const SignUp = ({ setView, setModalOpen}) => {
           setModalOpen(false);
         }, 800);
       }
-
     } catch (error) {
       const message =
         error?.response?.data?.message ||
@@ -75,12 +67,11 @@ const SignUp = ({ setView, setModalOpen}) => {
 
   return (
     <div className="bg-slate-100 text-gray-900 rounded-lg shadow-sm p-4 w-full max-w-md mx-auto">
-      
+
       <h3 className="text-2xl font-bold text-center mb-3">
         Sign Up
       </h3>
 
-      {/* GLOBAL ERROR (FIXED) */}
       {err && (
         <div className="bg-red-200 text-red-600 px-3 py-2 rounded-md text-sm mb-3">
           {err}
@@ -95,7 +86,7 @@ const SignUp = ({ setView, setModalOpen}) => {
           <input
             type="text"
             placeholder="eg: John Doe"
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-green-300"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400"
             value={formData.name}
             onChange={(e) => {
               setErr("");
@@ -113,7 +104,7 @@ const SignUp = ({ setView, setModalOpen}) => {
           <input
             type="email"
             placeholder="eg: johndoe2@gmail.com"
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-green-300"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400"
             value={formData.email}
             onChange={(e) => {
               setErr("");
@@ -131,7 +122,7 @@ const SignUp = ({ setView, setModalOpen}) => {
           <input
             type="password"
             placeholder="eg: code$-20craze-2006$"
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-green-300"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400"
             value={formData.password}
             onChange={(e) => {
               setErr("");
@@ -150,7 +141,7 @@ const SignUp = ({ setView, setModalOpen}) => {
           </label>
           <input
             type="password"
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400"
             value={formData.confirmPassword}
             onChange={(e) => {
               setErr("");
@@ -165,10 +156,10 @@ const SignUp = ({ setView, setModalOpen}) => {
         {/* BUTTON */}
         <button
           disabled={loading}
-          className={`w-full py-2 rounded-md text-white ${
+          className={`w-full py-2 rounded-md text-white transition ${
             loading
-              ? "bg-green-400 cursor-not-allowed"
-              : "bg-green-700 hover:bg-green-500"
+              ? "bg-indigo-300 cursor-not-allowed"
+              : "bg-indigo-600 hover:bg-indigo-500"
           }`}
         >
           {loading ? (
@@ -188,7 +179,7 @@ const SignUp = ({ setView, setModalOpen}) => {
         <p className="text-center text-sm mt-2">
           Already have an account?{" "}
           <span
-            className="text-blue-500 underline cursor-pointer"
+            className="text-indigo-500 underline cursor-pointer"
             onClick={() => setView("login")}
           >
             Login
@@ -201,4 +192,3 @@ const SignUp = ({ setView, setModalOpen}) => {
 };
 
 export default SignUp;
-

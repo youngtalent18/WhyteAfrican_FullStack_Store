@@ -11,17 +11,24 @@ const ForgotPassword = ({ setView }) => {
     e.preventDefault();
 
     if (!email) {
-      return toast.error("Email is required", {id: "forgot-no-email"});
+      return toast.error("Email is required", {
+        id: "forgot-no-email",
+      });
     }
 
     try {
       setLoading(true);
       await api.post("/auth/forgot-password", { email });
 
-      toast.success("Reset link sent to your email", {id: "forgot-success"});
+      toast.success("Reset link sent to your email", {
+        id: "forgot-success",
+      });
       setEmail("");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Something went wrong", {id: "forgot-error"});
+      toast.error(
+        err.response?.data?.message || "Something went wrong",
+        { id: "forgot-error" }
+      );
     } finally {
       setLoading(false);
     }
@@ -32,8 +39,8 @@ const ForgotPassword = ({ setView }) => {
 
       {/* HEADER */}
       <div className="text-center space-y-2">
-        <div className="mx-auto w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-          <Mail className="text-emerald-500" size={22} />
+        <div className="mx-auto w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+          <Mail className="text-indigo-500" size={22} />
         </div>
 
         <h2 className="text-xl sm:text-2xl font-bold">
@@ -57,7 +64,7 @@ const ForgotPassword = ({ setView }) => {
           <input
             type="email"
             placeholder="you@example.com"
-            className="w-full px-3 py-2.5 text-sm rounded-md border border-gray-300 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            className="w-full px-3 py-2.5 text-sm rounded-md border border-gray-300 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -68,8 +75,8 @@ const ForgotPassword = ({ setView }) => {
           disabled={loading}
           className={`w-full py-2.5 rounded-md text-sm font-medium transition flex items-center justify-center gap-2 ${
             loading
-              ? "bg-emerald-300 cursor-not-allowed"
-              : "bg-green-700 hover:bg-green-500 text-white"
+              ? "bg-indigo-300 cursor-not-allowed"
+              : "bg-indigo-600 hover:bg-indigo-500 text-white"
           }`}
         >
           {loading ? (
@@ -88,7 +95,7 @@ const ForgotPassword = ({ setView }) => {
         Remember your password?{" "}
         <span
           onClick={() => setView("login")}
-          className="text-emerald-600 underline cursor-pointer"
+          className="text-indigo-600 underline cursor-pointer"
         >
           Back to login
         </span>

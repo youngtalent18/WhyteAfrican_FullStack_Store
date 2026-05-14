@@ -16,7 +16,6 @@ const Login = ({ setView, setModalOpen }) => {
   const [resendLoading, setResendLoading] = useState(false);
   const [cooldown, setCooldown] = useState(0);
 
-  // ⏳ Countdown logic
   useEffect(() => {
     if (cooldown <= 0) return;
 
@@ -27,7 +26,6 @@ const Login = ({ setView, setModalOpen }) => {
     return () => clearInterval(timer);
   }, [cooldown]);
 
-  // 🔐 LOGIN
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -45,7 +43,6 @@ const Login = ({ setView, setModalOpen }) => {
     }
   };
 
-  // 📧 RESEND VERIFICATION
   const handleResend = async () => {
     try {
       setResendLoading(true);
@@ -54,11 +51,11 @@ const Login = ({ setView, setModalOpen }) => {
         email: formData.email,
       });
 
-      toast.success(res.data.message || "Verification email sent", {id: "resend-success"});
+      toast.success(res.data.message || "Verification email sent", {
+        id: "resend-success",
+      });
 
-      // 🔥 Start countdown immediately
       setCooldown(res.data.retryAfter || 60);
-
     } catch (err) {
       if (err.response?.status === 429) {
         const seconds = err.response.data.retryAfter;
@@ -66,7 +63,8 @@ const Login = ({ setView, setModalOpen }) => {
       }
 
       toast.error(
-        err.response?.data?.message || "Failed to resend email", {id: "resend-error"}
+        err.response?.data?.message || "Failed to resend email",
+        { id: "resend-error" }
       );
     } finally {
       setResendLoading(false);
@@ -96,7 +94,7 @@ const Login = ({ setView, setModalOpen }) => {
               setFormData({ ...formData, email: e.target.value })
             }
             required
-            className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400"
             placeholder="you@example.com"
           />
         </div>
@@ -110,7 +108,7 @@ const Login = ({ setView, setModalOpen }) => {
 
             <p
               onClick={() => setView("forgot")}
-              className="text-emerald-600 text-xs sm:text-sm cursor-pointer hover:underline"
+              className="text-indigo-500 text-xs sm:text-sm cursor-pointer hover:underline"
             >
               Forgot password?
             </p>
@@ -123,7 +121,7 @@ const Login = ({ setView, setModalOpen }) => {
               setFormData({ ...formData, password: e.target.value })
             }
             required
-            className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400"
             placeholder="••••••••"
           />
         </div>
@@ -134,8 +132,8 @@ const Login = ({ setView, setModalOpen }) => {
           className={`w-full py-2.5 rounded-md text-white font-medium transition
             ${
               loading
-                ? "bg-green-400 cursor-not-allowed"
-                : "bg-green-700 hover:bg-green-600"
+                ? "bg-indigo-300 cursor-not-allowed"
+                : "bg-indigo-600 hover:bg-indigo-500"
             }`}
         >
           {loading ? (
@@ -167,7 +165,7 @@ const Login = ({ setView, setModalOpen }) => {
                 ${
                   cooldown > 0
                     ? "text-gray-400 cursor-not-allowed"
-                    : "text-blue-600 hover:underline"
+                    : "text-indigo-500 hover:underline"
                 }`}
             >
               {resendLoading ? (
@@ -188,7 +186,7 @@ const Login = ({ setView, setModalOpen }) => {
         <p className="text-center text-xs sm:text-sm mt-2">
           Don’t have an account?{" "}
           <span
-            className="text-blue-500 underline cursor-pointer"
+            className="text-indigo-500 underline cursor-pointer"
             onClick={() => setView("signup")}
           >
             Sign Up
