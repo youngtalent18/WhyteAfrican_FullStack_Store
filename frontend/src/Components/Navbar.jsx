@@ -22,36 +22,50 @@ import { useState } from "react";
 import userStore from "../store/userStore.js";
 import cartStore from "../store/cartStore.js";
 
-const Navbar = ({ search, setSearch, isModalOpen, setModalOpen, view, setView }) => {
+const Navbar = ({
+  search,
+  setSearch,
+  isModalOpen,
+  setModalOpen,
+  view,
+  setView,
+}) => {
   const { user, logout } = userStore();
   const { cart } = cartStore();
-
-  const isAdmin = user?.role === "admin";
+  const isAdmin = true;
 
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="sticky top-0 z-50 bg-slate-800 border-b border-gray-400">
-      {/* ================= TOP BAR ================= */}
+    <div className="sticky top-0 z-50 bg-[#111827] border-b border-slate-800">
+      {/* TOP BAR */}
       <div className="flex items-center justify-between px-4 py-3">
 
         {/* LOGO */}
-        <Link to="/" className="font-bold text-xl text-white whitespace-nowrap">
+        <Link
+          to="/"
+          className="font-bold text-xl text-indigo-400"
+        >
           WhyteAfrican
         </Link>
 
-        {/* DESKTOP SEARCH */}
-        <div className="hidden sm:flex flex-1 max-w-125 mx-4">
+        {/* SEARCH */}
+        <div className="hidden sm:flex flex-1 max-w-xl mx-4">
           <Search search={search} setSearch={setSearch} />
         </div>
 
         {/* DESKTOP NAV */}
-        <div className="hidden md:flex items-center gap-4 text-white">
+        <div className="hidden md:flex items-center gap-5 text-slate-200">
 
-          <Link to="/">Home</Link>
+          <Link className="hover:text-white" to="/">
+            Home
+          </Link>
 
           {user && (
-            <Link to="/orders" className="flex items-center gap-1">
+            <Link
+              to="/orders"
+              className="flex items-center gap-1 hover:text-white"
+            >
               <Package size={15} />
               Orders
             </Link>
@@ -60,17 +74,17 @@ const Navbar = ({ search, setSearch, isModalOpen, setModalOpen, view, setView })
           {isAdmin && (
             <Link
               to="/dashboard"
-              className="px-2 py-1 bg-amber-400 rounded flex items-center gap-1"
+              className="flex items-center gap-1 px-3 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white"
             >
               <Lock size={15} />
-              Dashboard
+              Admin
             </Link>
           )}
 
           {user ? (
             <button
               onClick={logout}
-              className="flex items-center gap-1 bg-red-500 px-2 py-1 rounded"
+              className="flex items-center gap-1 px-3 py-1 rounded bg-red-500 hover:bg-red-600 cursor-pointer text-white"
             >
               <LogOut size={15} />
               Logout
@@ -82,7 +96,7 @@ const Navbar = ({ search, setSearch, isModalOpen, setModalOpen, view, setView })
                   setView("signup");
                   setModalOpen(true);
                 }}
-                className="flex items-center gap-1"
+                className="flex items-center gap-1 hover:text-white"
               >
                 <UserPlus size={15} />
                 Signup
@@ -93,7 +107,7 @@ const Navbar = ({ search, setSearch, isModalOpen, setModalOpen, view, setView })
                   setView("login");
                   setModalOpen(true);
                 }}
-                className="flex items-center gap-1"
+                className="flex items-center gap-1 px-3 py-1 rounded bg-indigo-500 hover:bg-indigo-400 text-white"
               >
                 <LogIn size={15} />
                 Login
@@ -102,10 +116,10 @@ const Navbar = ({ search, setSearch, isModalOpen, setModalOpen, view, setView })
           )}
 
           {user && (
-            <Link to="/cart" className="relative">
+            <Link to="/cart" className="relative text-slate-200 hover:text-white">
               <ShoppingCart size={20} />
               {cart.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-green-500 text-[10px] w-5 h-5 flex items-center justify-center rounded-full">
+                <span className="absolute -top-2 -right-2 bg-indigo-500 text-[10px] w-5 h-5 flex items-center justify-center rounded-full">
                   {cart.length}
                 </span>
               )}
@@ -113,42 +127,38 @@ const Navbar = ({ search, setSearch, isModalOpen, setModalOpen, view, setView })
           )}
         </div>
 
-        {/* MOBILE ACTIONS */}
+        {/* MOBILE ICONS */}
         <div className="flex items-center gap-3 md:hidden">
 
           {user && (
             <Link to="/cart" className="relative text-white">
               <ShoppingCart size={20} />
               {cart.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-green-500 text-[10px] w-5 h-5 flex items-center justify-center rounded-full">
+                <span className="absolute -top-2 -right-2 bg-indigo-500 text-[10px] w-5 h-5 flex items-center justify-center rounded-full">
                   {cart.length}
                 </span>
               )}
             </Link>
           )}
 
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="text-white"
-          >
+          <button onClick={() => setMenuOpen(!menuOpen)} className="text-white">
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </div>
 
-      {/* ================= MOBILE SEARCH ================= */}
+      {/* MOBILE SEARCH */}
       <div className="sm:hidden px-4 pb-3">
         <Search search={search} setSearch={setSearch} />
       </div>
 
-      {/* ================= MOBILE MENU ================= */}
+      {/* MOBILE MENU */}
       {menuOpen && (
-        <div className="fixed inset-0 z-60 bg-black/60 md:hidden">
-
-          <div className="absolute left-0 top-0 w-[85%] max-w-sm h-full bg-slate-900 flex flex-col">
+        <div className="fixed inset-0 z-50 bg-black/70 md:hidden">
+          <div className="absolute left-0 top-0 w-[85%] max-w-sm h-full bg-[#0f172a] flex flex-col">
 
             {/* HEADER */}
-            <div className="flex justify-between items-center p-4 border-b border-slate-700">
+            <div className="flex justify-between items-center p-4 border-b border-slate-800">
               <h2 className="text-white font-semibold">Menu</h2>
               <button onClick={() => setMenuOpen(false)}>
                 <X className="text-white" />
@@ -156,14 +166,14 @@ const Navbar = ({ search, setSearch, isModalOpen, setModalOpen, view, setView })
             </div>
 
             {/* LINKS */}
-            <div className="flex-1 p-4 space-y-3 divide-y divide-gray-500 text-white">
+            <div className="flex-1 p-4 space-y-2 text-slate-200">
 
               <Link
                 to="/"
                 onClick={() => setMenuOpen(false)}
                 className="flex items-center gap-2 p-2 rounded hover:bg-slate-800"
               >
-                <Home size={18}/>
+                <Home size={18} />
                 Home
               </Link>
 
@@ -171,13 +181,10 @@ const Navbar = ({ search, setSearch, isModalOpen, setModalOpen, view, setView })
                 <Link
                   to="/cart"
                   onClick={() => setMenuOpen(false)}
-                  className="flex gap-2 p-2 rounded hover:bg-slate-800"
+                  className="flex items-center gap-2 p-2 rounded hover:bg-slate-800"
                 >
-                  <ShoppingCart size={18}/>
-                  <span>Cart</span>
-                  <span className="bg-green-600 px-2 rounded-2xl text-sm">
-                    {cart.length}
-                  </span>
+                  <ShoppingCart size={18} />
+                  Cart ({cart.length})
                 </Link>
               )}
 
@@ -187,7 +194,7 @@ const Navbar = ({ search, setSearch, isModalOpen, setModalOpen, view, setView })
                   onClick={() => setMenuOpen(false)}
                   className="flex items-center gap-2 p-2 rounded hover:bg-slate-800"
                 >
-                  <Package size={18}/>
+                  <Package size={18} />
                   Orders
                 </Link>
               )}
@@ -196,16 +203,16 @@ const Navbar = ({ search, setSearch, isModalOpen, setModalOpen, view, setView })
                 <Link
                   to="/dashboard"
                   onClick={() => setMenuOpen(false)}
-                  className=" flex items-center gap-2 p-2 text-amber-400"
+                  className="flex items-center gap-2 p-2 text-indigo-500"
                 >
-                  <Lock size={18}/>
-                  Admin Dashboard
+                  <Lock size={18} />
+                  Admin Panel
                 </Link>
               )}
             </div>
 
             {/* AUTH */}
-            <div className="p-4 border-t border-slate-700 space-y-3">
+            <div className="p-4 border-t border-slate-800 space-y-3">
 
               {user ? (
                 <button
@@ -213,7 +220,7 @@ const Navbar = ({ search, setSearch, isModalOpen, setModalOpen, view, setView })
                     logout();
                     setMenuOpen(false);
                   }}
-                  className="w-full bg-red-600 py-2 rounded text-white"
+                  className="w-full bg-red-500 hover:bg-red-400 py-2 rounded text-white"
                 >
                   Logout
                 </button>
@@ -225,7 +232,7 @@ const Navbar = ({ search, setSearch, isModalOpen, setModalOpen, view, setView })
                       setModalOpen(true);
                       setMenuOpen(false);
                     }}
-                    className="w-full bg-green-600 py-2 rounded text-white"
+                    className="w-full bg-indigo-600 hover:bg-indigo-500 py-2 rounded text-white"
                   >
                     Login
                   </button>
@@ -236,7 +243,7 @@ const Navbar = ({ search, setSearch, isModalOpen, setModalOpen, view, setView })
                       setModalOpen(true);
                       setMenuOpen(false);
                     }}
-                    className="w-full border border-green-500 text-green-400 py-2 rounded"
+                    className="w-full border border-indigo-600 text-indigo-500 py-2 rounded"
                   >
                     Create Account
                   </button>
@@ -247,7 +254,7 @@ const Navbar = ({ search, setSearch, isModalOpen, setModalOpen, view, setView })
         </div>
       )}
 
-      {/* ================= MODAL ================= */}
+      {/* MODAL */}
       <Modal isModalOpen={isModalOpen} setModalOpen={setModalOpen}>
         {view === "login" && (
           <Login setView={setView} setModalOpen={setModalOpen} />
