@@ -15,8 +15,9 @@ export default function ResetPassword() {
     e.preventDefault();
 
     if (password.length < 6) {
-      toast.error("Password must be at least 6 characters", { id: "reset-invalid" });
-
+      toast.error("Password must be at least 6 characters", {
+        id: "reset-invalid",
+      });
       return;
     }
 
@@ -27,16 +28,16 @@ export default function ResetPassword() {
         password,
       });
 
-      toast.success("Password reset successful", { id: "reset-success" });
+      toast.success("Password reset successful", {
+        id: "reset-success",
+      });
 
       navigate("/?login=open", { replace: true });
-
     } catch (err) {
       const message =
         err.response?.data?.message || "Something went wrong";
 
       toast.error(message, { id: "reset-error" });
-
     } finally {
       setLoading(false);
     }
@@ -49,8 +50,8 @@ export default function ResetPassword() {
 
         {/* HEADER */}
         <div className="text-center space-y-2">
-          <div className="mx-auto w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-            <Lock className="text-emerald-500" size={22} />
+          <div className="mx-auto w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+            <Lock className="text-indigo-500" size={22} />
           </div>
 
           <h2 className="text-xl sm:text-2xl font-bold">
@@ -74,7 +75,7 @@ export default function ResetPassword() {
             <input
               type="password"
               placeholder="••••••••"
-              className="w-full px-3 py-2.5 text-sm rounded-md border border-gray-300 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              className="w-full px-3 py-2.5 text-sm rounded-md border border-gray-300 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -85,8 +86,8 @@ export default function ResetPassword() {
             disabled={loading}
             className={`w-full py-2.5 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition ${
               loading
-                ? "bg-emerald-300 cursor-not-allowed"
-                : "bg-emerald-600 hover:bg-emerald-500 text-white"
+                ? "bg-indigo-300 cursor-not-allowed"
+                : "bg-indigo-600 hover:bg-indigo-500 text-white"
             }`}
           >
             {loading ? (
@@ -105,7 +106,7 @@ export default function ResetPassword() {
           Remember your password?{" "}
           <span
             onClick={() => navigate("/?login=open")}
-            className="text-emerald-600 underline cursor-pointer"
+            className="text-indigo-600 underline cursor-pointer"
           >
             Back to login
           </span>

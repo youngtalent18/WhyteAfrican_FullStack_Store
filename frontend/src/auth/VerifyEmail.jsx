@@ -16,14 +16,12 @@ export default function VerifyEmail() {
 
   const hasVerified = useRef(false);
 
-  // 🔥 Autofill email from query (?email=...)
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const emailParam = params.get("email");
     if (emailParam) setEmail(emailParam);
   }, [location.search]);
 
-  // 🔐 VERIFY TOKEN (run once)
   useEffect(() => {
     if (hasVerified.current) return;
     hasVerified.current = true;
@@ -32,7 +30,10 @@ export default function VerifyEmail() {
       try {
         await api.get(`/auth/verify-email/${token}`);
 
-        toast.success("Email verified successfully!",{id: "verify-success"});
+        toast.success("Email verified successfully!", {
+          id: "verify-success",
+        });
+
         setStatus("success");
 
         setTimeout(() => {
@@ -45,8 +46,10 @@ export default function VerifyEmail() {
         }, 1500);
       } catch (err) {
         setStatus("error");
+
         toast.error(
-          err.response?.data?.message || "Verification failed", {id: "verify-error"}
+          err.response?.data?.message || "Verification failed",
+          { id: "verify-error" }
         );
       }
     };
@@ -54,7 +57,6 @@ export default function VerifyEmail() {
     verify();
   }, [token, navigate]);
 
-  // ⏳ Countdown logic
   useEffect(() => {
     if (cooldown <= 0) return;
 
@@ -65,10 +67,9 @@ export default function VerifyEmail() {
     return () => clearInterval(timer);
   }, [cooldown]);
 
-  // 📧 RESEND VERIFICATION
   const handleResend = async () => {
     if (!email) {
-      toast.error("Enter your email first", {id: "resend-no-email"});
+      toast.error("Enter your email first", { id: "resend-no-email" });
       return;
     }
 
@@ -79,17 +80,20 @@ export default function VerifyEmail() {
         email,
       });
 
-      toast.success(res.data.message || "Verification email sent", {id: "resend-success"});
+      toast.success(
+        res.data.message || "Verification email sent",
+        { id: "resend-success" }
+      );
 
       setCooldown(res.data.retryAfter || 60);
-
     } catch (err) {
       if (err.response?.status === 429) {
         setCooldown(err.response.data.retryAfter);
       }
 
       toast.error(
-        err.response?.data?.message || "Failed to resend email", {id: "resend-error"}
+        err.response?.data?.message || "Failed to resend email",
+        { id: "resend-error" }
       );
     } finally {
       setResendLoading(false);
@@ -104,14 +108,14 @@ export default function VerifyEmail() {
         {/* ICON */}
         <div className="flex justify-center">
           {status === "loading" && (
-            <div className="w-14 h-14 flex items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/20">
-              <Loader2 className="animate-spin text-emerald-400" size={26} />
+            <div className="w-14 h-14 flex items-center justify-center rounded-full bg-indigo-500/10 border border-indigo-500/20">
+              <Loader2 className="animate-spin text-indigo-400" size={26} />
             </div>
           )}
 
           {status === "success" && (
-            <div className="w-14 h-14 flex items-center justify-center rounded-full bg-green-500/10 border border-green-500/20">
-              <CheckCircle2 className="text-green-400" size={28} />
+            <div className="w-14 h-14 flex items-center justify-center rounded-full bg-indigo-500/10 border border-indigo-500/20">
+              <CheckCircle2 className="text-indigo-400" size={28} />
             </div>
           )}
 
@@ -137,7 +141,7 @@ export default function VerifyEmail() {
 
           {status === "success" && (
             <>
-              <h2 className="text-xl sm:text-2xl font-semibold text-green-400">
+              <h2 className="text-xl sm:text-2xl font-semibold text-indigo-400">
                 Email verified
               </h2>
               <p className="text-sm text-slate-400">
@@ -161,11 +165,11 @@ export default function VerifyEmail() {
         {/* LOADING BAR */}
         {status === "loading" && (
           <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
-            <div className="h-full w-1/2 bg-emerald-500 animate-pulse" />
+            <div className="h-full w-1/2 bg-indigo-500 animate-pulse" />
           </div>
         )}
 
-        {/* 🔥 ERROR ACTIONS */}
+        {/* ERROR ACTIONS */}
         {status === "error" && (
           <div className="space-y-4 pt-2">
 
@@ -174,7 +178,7 @@ export default function VerifyEmail() {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-md bg-slate-800 border border-slate-700 text-white outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full px-3 py-2 text-sm rounded-md bg-slate-800 border border-slate-700 text-white outline-none focus:ring-2 focus:ring-indigo-500"
             />
 
             <button
@@ -184,7 +188,7 @@ export default function VerifyEmail() {
                 ${
                   cooldown > 0
                     ? "bg-gray-600 cursor-not-allowed"
-                    : "bg-emerald-600 hover:bg-emerald-500"
+                    : "bg-indigo-600 hover:bg-indigo-500"
                 } text-white`}
             >
               {resendLoading
