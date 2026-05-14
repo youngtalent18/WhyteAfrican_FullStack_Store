@@ -92,7 +92,7 @@ const OrderSummary = () => {
   };
 
   return (
-    <div className="bg-slate-800 border border-slate-700 p-5 rounded-xl h-fit top-5">
+    <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl h-fit top-5">
 
       {/* SUMMARY */}
       <h2 className="text-lg font-semibold text-white mb-4">
