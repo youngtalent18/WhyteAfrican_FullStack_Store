@@ -18,7 +18,7 @@ const PeopleAlsoBought = () => {
     <div className="mt-8 px-2 sm:px-0">
 
       {/* TITLE */}
-      <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-emerald-400">
+      <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-indigo-400">
         People Also Bought
       </h3>
 
