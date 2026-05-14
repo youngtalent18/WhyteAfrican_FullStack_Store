@@ -81,7 +81,7 @@ const ProductCard = ({ product }) => {
   return (
     <div
       onClick={goToProduct}
-      className="group bg-slate-100 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition cursor-pointer flex flex-col"
+      className="group bg-slate-800 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition cursor-pointer flex flex-col"
     >
       {/* IMAGE */}
       <div className="relative overflow-hidden">
@@ -109,7 +109,7 @@ const ProductCard = ({ product }) => {
 
       {/* CONTENT */}
       <div className="p-3 flex flex-col gap-2 flex-1">
-        <h3 className="text-slate-700 font-semibold text-sm line-clamp-1">
+        <h3 className="text-white font-semibold text-sm line-clamp-1">
           {product?.name || "Unnamed product"}
         </h3>
 

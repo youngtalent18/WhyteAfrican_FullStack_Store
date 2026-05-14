@@ -65,7 +65,7 @@ const CartPage = () => {
               to="/"
               className="
                 mt-6
-                bg-indigo-600 hover:bg-indigo-500
+                bg-indigo-500 hover:bg-indigo-500
                 transition
                 px-6 py-2
                 rounded-md
