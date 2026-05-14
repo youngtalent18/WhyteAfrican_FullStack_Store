@@ -49,8 +49,8 @@ const Search = ({ search, setSearch }) => {
         type="submit"
         className="
           px-4 py-2
-          bg-indigo-500
-          hover:bg-indigo-600
+          bg-indigo-600
+          hover:bg-indigo-500
           text-white
           rounded-r-md
           transition

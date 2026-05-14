@@ -130,7 +130,7 @@ const CouponDashboard = () => {
             shadow-lg
           "
         >
-          <h2 className="text-lg sm:text-xl font-semibold text-emerald-400">
+          <h2 className="text-lg sm:text-xl font-semibold text-indigo-600">
             Create Coupon
           </h2>
 
@@ -282,7 +282,7 @@ const CouponDashboard = () => {
 
           {/* TITLE */}
           <div className="flex items-center justify-between">
-            <h2 className="text-lg sm:text-xl font-semibold">
+            <h2 className="text-lg sm:text-xl font-semibold text-indigo-500">
               Coupons
             </h2>
           </div>
@@ -305,7 +305,7 @@ const CouponDashboard = () => {
                 Active
               </p>
 
-              <h3 className="text-2xl font-bold text-indigo-400 mt-1">
+              <h3 className="text-2xl font-bold text-emerald-400 mt-1">
                 {
                   coupons.filter(
                     (c) => c.isActive
@@ -413,7 +413,7 @@ const CouponDashboard = () => {
 
                       <p className="text-xs">
                         Type:{" "}
-                        <span className="text-blue-400">
+                        <span className="text-emerald-400">
                           {c.userId
                             ? "User"
                             : "Global"}

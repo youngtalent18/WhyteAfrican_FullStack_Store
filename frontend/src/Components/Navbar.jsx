@@ -37,14 +37,14 @@ const Navbar = ({
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="sticky top-0 z-50 bg-[#111827] border-b border-slate-800">
+    <div className="sticky top-0 z-50 bg-[#06090fef] border-b border-slate-900">
       {/* TOP BAR */}
       <div className="flex items-center justify-between px-4 py-3">
 
         {/* LOGO */}
         <Link
           to="/"
-          className="font-bold text-xl text-indigo-400"
+          className="font-bold text-xl text-indigo-600"
         >
           WhyteAfrican
         </Link>
