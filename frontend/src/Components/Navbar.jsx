@@ -32,7 +32,7 @@ const Navbar = ({
 }) => {
   const { user, logout } = userStore();
   const { cart } = cartStore();
-  const isAdmin = true;
+  const isAdmin = user?.role === "admin";
 
   const [menuOpen, setMenuOpen] = useState(false);
 
