@@ -9,18 +9,34 @@ export const generateTokens = async(userId) =>{
 }
 
 
-export const setCookies = (res, accessToken, refreshToken) => {
-    res.cookie("accessToken", accessToken, {
-        sameSite: "none",
-        httpOnly: true,
-        secure: process.env.NODE_ENV !== "development",
-        maxAge: 15*60*1000
-    });
+export const setCookies = (
+  res,
+  accessToken,
+  refreshToken
+) => {
+  const isProduction =
+    process.env.NODE_ENV === "production";
 
-    res.cookie("refresh", refreshToken, {
-        sameSite: "none",
-        httpOnly: true,
-        secure: process.env.NODE_ENV !== "development",
-        maxAge: 7*24*60*60*1000
-    });
-}
+  res.cookie(
+    "accessToken",
+    accessToken,
+    {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: "none",
+      maxAge: 15 * 60 * 1000,
+    }
+  );
+
+  res.cookie(
+    "refreshToken",
+    refreshToken,
+    {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: "none",
+      maxAge:
+        7 * 24 * 60 * 60 * 1000,
+    }
+  );
+};
