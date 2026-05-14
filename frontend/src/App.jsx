@@ -89,15 +89,15 @@ function AppContent() {
   // ================= LOADING STATE =================
   if (checkingAuth) {
     return (
-      <div className="flex flex-col min-h-screen items-center justify-center gap-2 text-white text-xl bg-slate-700">
-        <Loader className="animate-spin" size={30} />
+      <div className="flex flex-col min-h-screen items-center justify-center gap-2 text-white text-xl bg-linear-to-br from-[#0f172a] to-[#111827]">
+        <Loader className="animate-spin text-indigo-400" size={30} />
         loading...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-[#090e1a] text-slate-100">
       {/* NAVBAR */}
       {!hideNavbar && (
         <Navbar
