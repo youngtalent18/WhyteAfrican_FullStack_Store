@@ -10,36 +10,53 @@ const Search = ({ search, setSearch }) => {
     if (!search.trim()) return;
 
     navigate(`/search?q=${encodeURIComponent(search)}`);
-
     setSearch("");
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full flex items-center">
-      
+    <form
+      onSubmit={handleSubmit}
+      className="w-full flex items-center"
+    >
       {/* INPUT */}
-      <input
-        type="text"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search products..."
-        className="w-full px-3 py-2 border border-gray-300 rounded-l bg-slate-700 text-white outline-none"
-      />
+      <div className="relative w-full">
+        <SearchIcon
+          size={18}
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+        />
 
-      {/* MOBILE BUTTON (VISIBLE ON SMALL SCREENS) */}
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search products..."
+          className="
+            w-full pl-10 pr-3 py-2
+            bg-slate-800
+            text-white
+            rounded-l-md
+            border border-slate-700
+            outline-none
+            focus:border-indigo-500
+            focus:ring-1 focus:ring-indigo-500
+            transition
+          "
+        />
+      </div>
+
+      {/* BUTTON */}
       <button
         type="submit"
-        className="sm:hidden px-3 py-2 bg-green-600 text-white rounded-r"
+        className="
+          px-4 py-2
+          bg-indigo-500
+          hover:bg-indigo-600
+          text-white
+          rounded-r-md
+          transition
+        "
       >
         <SearchIcon size={18} />
-      </button>
-
-      {/* DESKTOP BUTTON (OPTIONAL – HIDDEN OR VISIBLE) */}
-      <button
-        type="submit"
-        className="hidden sm:flex px-4 py-2 bg-green-500 text-white rounded-r hover:bg-green-400 cursor-pointer"
-      >
-        Search
       </button>
     </form>
   );

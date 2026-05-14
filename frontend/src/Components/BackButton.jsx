@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const BackButton = () => {
@@ -8,34 +7,24 @@ const BackButton = () => {
     <button
       onClick={() => navigate(-1)}
       className="
-        fixed
-        top-32 sm:top-30 lg:top-24
-        left-4 sm:left-4
-        z-40
+        inline-flex items-center gap-2
 
-        flex items-center gap-1 sm:gap-2
+        px-3 py-1.5
+        rounded-md
 
-        px-1 sm:px-3 py-1.5 sm:py-1
+        bg-slate-900
+        border border-slate-800
 
-        rounded-2xl
+        text-slate-300
+        text-sm font-medium
 
-        bg-white/90 backdrop-blur-md
-        border border-white/40
-
-        text-gray-800
-        text-xs sm:text-sm font-medium
-
-        shadow-md sm:shadow-lg
-
-        hover:bg-white
-        hover:shadow-xl
+        hover:bg-slate-800 hover:text-white
+        transition
 
         active:scale-95
-        transition
-        cursor-pointer
       "
     >
-      <span className="sm:text-sm">← Back</span>
+      <span>← Back</span>
     </button>
   );
 };

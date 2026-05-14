@@ -25,7 +25,7 @@ const Sort = ({ setSortOption, setCategory, products }) => {
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 mb-6">
       
-      <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-lg p-4 sm:p-5 space-y-4">
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-lg p-4 sm:p-5 space-y-4">
 
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -39,13 +39,13 @@ const Sort = ({ setSortOption, setCategory, products }) => {
           {/* PRODUCT COUNT + SORT */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
 
-            <span className="self-start sm:self-auto px-3 py-1 rounded-full bg-slate-700 border border-slate-600 text-xs sm:text-sm text-gray-200">
+            <span className="self-start sm:self-auto px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-xs sm:text-sm text-gray-200">
               {productLength} Products
             </span>
 
             <select
               onChange={(e) => setSortOption(e.target.value)}
-              className="w-full sm:w-auto bg-slate-700 text-white px-3 py-2 rounded-lg border border-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-500 cursor-pointer text-sm"
+              className="w-full sm:w-auto bg-slate-800 text-white px-3 py-2 rounded-lg border border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 cursor-pointer text-sm"
             >
               <option>Popularity</option>
               <option value="name">Name</option>
@@ -68,7 +68,7 @@ const Sort = ({ setSortOption, setCategory, products }) => {
                 ${
                   activeCategory === item
                     ? "bg-white text-black border-white"
-                    : "border-slate-600 text-gray-200 hover:bg-slate-700"
+                    : "border-slate-700 text-gray-200 hover:bg-slate-800"
                 }
               `}
             >

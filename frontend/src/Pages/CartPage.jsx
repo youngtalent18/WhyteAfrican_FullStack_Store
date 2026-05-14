@@ -18,7 +18,6 @@ const CartPage = () => {
     getCartItems();
   }, [getCartItems]);
 
-  // ================= SAFE CART NORMALIZATION =================
   const safeCart = useMemo(() => {
     if (Array.isArray(cart)) return cart;
     if (Array.isArray(cart?.cart)) return cart.cart;
@@ -27,36 +26,51 @@ const CartPage = () => {
   }, [cart]);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+    <div className="h-[70vh] text-white">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
 
         {/* HEADER */}
-        <div className="mb-5">
-          <h1 className="text-2xl font-semibold">Shopping Cart</h1>
-          <p className="text-sm text-gray-400">
-            Review your items before checkout
-          </p>
-        </div>
+        {cart.length > 0? (
+          <div className="mb-6">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Shopping Cart
+            </h1>
+            <p className="text-sm text-slate-400 mt-1">
+              Review your items and proceed to checkout
+            </p>
+          </div>
+        ):(
+          null
+        )}
 
         {/* EMPTY STATE */}
         {safeCart.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-center bg-slate-900 border border-slate-800 rounded-2xl p-8 sm:p-12 min-h-[55vh]">
+          <div className="flex flex-col items-center justify-center text-center rounded-2xl p-10 sm:p-14 min-h-[55vh]">
 
-            <ShoppingCart className="w-16 h-16 text-gray-500 mb-4" />
+            <div className="bg-slate-800 p-4 rounded-full mb-5">
+              <ShoppingCart className="w-10 h-10 text-slate-400" />
+            </div>
 
-            <h2 className="text-lg sm:text-xl font-medium text-gray-200">
+            <h2 className="text-lg sm:text-xl font-medium text-white">
               {user?.name
                 ? `${user.name}, your cart is empty`
                 : "Your cart is empty"}
             </h2>
 
-            <p className="text-sm text-gray-400 mt-2 max-w-md">
-              Add products you love — they’ll appear here for checkout.
+            <p className="text-sm text-slate-400 mt-2 max-w-md">
+              Oops! It looks like you haven't added any items to your cart yet. 
             </p>
 
             <Link
               to="/"
-              className="mt-6 bg-emerald-500 hover:bg-emerald-600 transition px-6 py-2 rounded-lg font-medium"
+              className="
+                mt-6
+                bg-indigo-600 hover:bg-indigo-500
+                transition
+                px-6 py-2
+                rounded-md
+                font-medium
+              "
             >
               Continue Shopping
             </Link>
@@ -84,7 +98,7 @@ const CartPage = () => {
 
             {/* SUMMARY */}
             <motion.div
-              className="space-y-4"
+              className="space-y-4 lg:sticky lg:top-24"
               initial={{ opacity: 0, x: 15 }}
               animate={{ opacity: 1, x: 0 }}
             >

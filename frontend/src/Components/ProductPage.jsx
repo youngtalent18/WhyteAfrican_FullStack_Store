@@ -17,7 +17,7 @@ const ProductPage = () => {
           transition={{ duration: 0.5 }}
           className="min-w-full divide-y divide-gray-700"
         >
-          <thead className="bg-gray-700">
+          <thead className="bg-gray-800">
             <tr>
               <th className="px-5 py-3 text-left text-xs text-gray-300 uppercase">
                 Product
@@ -117,7 +117,7 @@ const ProductPage = () => {
                 <p className="text-gray-400 text-xs">
                   {product.category}
                 </p>
-                <p className="text-emerald-400 text-sm font-semibold mt-1">
+                <p className="text-indigo-400-400 text-sm font-semibold mt-1">
                   GHC {product.price.toFixed(2)}
                 </p>
               </div>

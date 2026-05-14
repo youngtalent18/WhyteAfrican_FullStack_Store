@@ -54,8 +54,8 @@ const AdminPage = () => {
                 className={`flex items-center gap-2 whitespace-nowrap px-4 py-2 rounded-lg border transition
                   ${
                     activeTab === tab.id
-                      ? "bg-emerald-500 border-emerald-500 text-white"
-                      : "border-slate-700 text-gray-300 hover:border-emerald-400"
+                      ? "bg-indigo-500 border-indigo-500 text-white"
+                      : "border-slate-700 text-gray-300 hover:border-indigo-400"
                   }
                 `}
               >
