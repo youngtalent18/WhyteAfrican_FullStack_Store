@@ -107,7 +107,7 @@ const Navbar = ({
                   setView("login");
                   setModalOpen(true);
                 }}
-                className="flex items-center gap-1 px-3 py-1 rounded bg-indigo-500 hover:bg-indigo-400 text-white"
+                className="flex items-center gap-1 px-3 py-1 rounded text-white"
               >
                 <LogIn size={15} />
                 Login
