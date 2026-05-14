@@ -67,7 +67,7 @@ const Sort = ({ setSortOption, setCategory, products }) => {
                 whitespace-nowrap px-3 py-1.5 text-xs sm:text-sm rounded-full border transition
                 ${
                   activeCategory === item
-                    ? "bg-white text-black border-white"
+                    ? "bg-indigo-600 text-black border-indigo-600"
                     : "border-slate-700 text-gray-200 hover:bg-slate-800"
                 }
               `}
