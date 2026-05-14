@@ -1,26 +1,37 @@
 import { sendResetEmail } from "../lib/utils/sendResetEmail.js";
 import User from "../model/userModel.js";
-import {generateTokens, setCookies} from "../lib/utils/generateToken.js"
+import {
+  generateTokens,
+  setCookies,
+} from "../lib/utils/generateToken.js";
 import { sendVerificationEmail } from "../lib/utils/sendVerificationEmail.js";
-import { sendEmail } from "../lib/utils/sendMail.js";
-import {redis} from "../config/redis.js"
-import jwt from "jsonwebtoken"
+import { redis } from "../config/redis.js";
+import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
+// ======================================================
+// STORE REFRESH TOKEN
+// ======================================================
 
 const storeRefreshToken = async (userId, refreshToken) => {
   await redis.set(
     `refresh_token:${userId}`,
     refreshToken,
-    { EX: 7 * 24 * 60 * 60 }
+    {
+      EX: 7 * 24 * 60 * 60,
+    }
   );
 };
 
+// ======================================================
+// REGISTER USER
+// ======================================================
 
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
+    // VALIDATION
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -28,7 +39,12 @@ export const registerUser = async (req, res) => {
       });
     }
 
-    const userExists = await User.findOne({ email });
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // CHECK EXISTING USER
+    const userExists = await User.findOne({
+      email: normalizedEmail,
+    });
 
     if (userExists) {
       return res.status(400).json({
@@ -37,16 +53,18 @@ export const registerUser = async (req, res) => {
       });
     }
 
-    // ✅ Create user (unverified)
+    // CREATE USER
     const user = await User.create({
       name,
-      email,
+      email: normalizedEmail,
       password,
       isVerified: false,
     });
 
-    // 🔐 Generate verification token
-    const verifyToken = crypto.randomBytes(32).toString("hex");
+    // GENERATE VERIFICATION TOKEN
+    const verifyToken = crypto
+      .randomBytes(32)
+      .toString("hex");
 
     const hashedToken = crypto
       .createHash("sha256")
@@ -54,36 +72,50 @@ export const registerUser = async (req, res) => {
       .digest("hex");
 
     user.verifyToken = hashedToken;
-    user.verifyTokenExpire = Date.now() + 1000 * 60 * 60; // 1 hour
+
+    user.verifyTokenExpire =
+      Date.now() + 1000 * 60 * 60;
 
     await user.save();
 
-    // 📩 Send verification email
+    // SEND VERIFICATION EMAIL
     try {
-      await sendVerificationEmail(user, verifyToken);
+      await sendVerificationEmail(
+        user,
+        verifyToken
+      );
     } catch (emailErr) {
-      console.log("EMAIL ERROR:", emailErr.message);
+      console.log(
+        "Verification email error:",
+        emailErr.message
+      );
     }
 
     return res.status(201).json({
       success: true,
-      message: "Account created. Check your email to verify.",
+      message:
+        "Account created. Check your email to verify.",
     });
 
   } catch (error) {
-    console.log(error);
+    console.log("Register error:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Internal server error",
     });
   }
 };
 
+// ======================================================
+// LOGIN USER
+// ======================================================
+
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // VALIDATION
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -91,7 +123,14 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email });
+    const normalizedEmail = email
+      .toLowerCase()
+      .trim();
+
+    // FIND USER
+    const user = await User.findOne({
+      email: normalizedEmail,
+    });
 
     if (!user) {
       return res.status(400).json({
@@ -108,7 +147,9 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    const isMatch = await user.comparePassword(password);
+    // PASSWORD CHECK
+    const isMatch =
+      await user.comparePassword(password);
 
     if (!isMatch) {
       return res.status(400).json({
@@ -117,15 +158,32 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    const { accessToken, refreshToken } = await generateTokens(user._id);
+    // GENERATE TOKENS
+    const {
+      accessToken,
+      refreshToken,
+    } = await generateTokens(user._id);
 
-    await storeRefreshToken(user._id, refreshToken);
-    setCookies(res, accessToken, refreshToken);
+    // STORE REFRESH TOKEN
+    await storeRefreshToken(
+      user._id,
+      refreshToken
+    );
 
-    // ✅ FIX: return accessToken to frontend
-    res.status(200).json({
+    // SET COOKIES
+    setCookies(
+      res,
+      accessToken,
+      refreshToken
+    );
+
+    // RESPONSE
+    return res.status(200).json({
       success: true,
-      accessToken, // 🔥 REQUIRED FOR FRONTEND
+
+      // OPTIONAL FOR FRONTEND
+      accessToken,
+
       user: {
         _id: user._id,
         name: user.name,
@@ -135,39 +193,7 @@ export const loginUser = async (req, res) => {
     });
 
   } catch (error) {
-    console.log("Error in login controller", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-};
-
-export const logoutUser = async (req, res) => {
-  try {
-    if (req.user?._id) {
-      await redis.del(`refresh_token:${req.user._id}`);
-    }
-
-    res.clearCookie("accessToken", {
-      httpOnly: true,
-      sameSite: "none",
-      secure: process.env.NODE_ENV === "production",
-    });
-
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      sameSite: "none",
-      secure: process.env.NODE_ENV === "production",
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: "Logout successful",
-    });
-
-  } catch (error) {
-    console.log("Error in logout controller", error);
+    console.log("Login error:", error);
 
     return res.status(500).json({
       success: false,
@@ -176,24 +202,79 @@ export const logoutUser = async (req, res) => {
   }
 };
 
-export async function refresh_token(req, res) {
+// ======================================================
+// LOGOUT USER
+// ======================================================
+
+export const logoutUser = async (req, res) => {
   try {
-    const refreshToken = req.headers.authorization;
+    // DELETE REFRESH TOKEN
+    if (req.user?._id) {
+      await redis.del(
+        `refresh_token:${req.user._id}`
+      );
+    }
+
+    // CLEAR ACCESS TOKEN COOKIE
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      sameSite: "none",
+      secure:
+        process.env.NODE_ENV === "production",
+    });
+
+    // CLEAR REFRESH TOKEN COOKIE
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      sameSite: "none",
+      secure:
+        process.env.NODE_ENV === "production",
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logout successful",
+    });
+
+  } catch (error) {
+    console.log("Logout error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+// ======================================================
+// REFRESH ACCESS TOKEN
+// ======================================================
+
+export const refresh_token = async (
+  req,
+  res
+) => {
+  try {
+    const refreshToken =
+      req.cookies.refreshToken;
 
     if (!refreshToken) {
       return res.status(401).json({
         success: false,
-        message: "No refresh token provided",
+        message:
+          "No refresh token provided",
       });
     }
 
+    // VERIFY TOKEN
     const decoded = jwt.verify(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET
     );
 
+    // CHECK REDIS TOKEN
     const storedToken = await redis.get(
-      `refresh_token:${decoded.userId}` // 🔥 FIXED (no space)
+      `refresh_token:${decoded.userId}`
     );
 
     if (storedToken !== refreshToken) {
@@ -203,97 +284,182 @@ export async function refresh_token(req, res) {
       });
     }
 
+    // CREATE NEW ACCESS TOKEN
     const accessToken = jwt.sign(
       { userId: decoded.userId },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "15m" }
+      {
+        expiresIn: "15m",
+      }
     );
 
-    res.cookie("accessToken", accessToken, {
-      sameSite: "none",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 15 * 60 * 1000,
-    });
-
-    res.status(200).json({
-      success: true,
+    // SET NEW ACCESS TOKEN COOKIE
+    res.cookie(
+      "accessToken",
       accessToken,
-      message: "Access token refreshed",
+      {
+        httpOnly: true,
+        sameSite: "none",
+        secure:
+          process.env.NODE_ENV ===
+          "production",
+        maxAge: 15 * 60 * 1000,
+      }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Access token refreshed",
     });
 
   } catch (error) {
-    console.log("Error in refresh token controller", error);
+    console.log(
+      "Refresh token error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
       message: "Internal server error",
     });
   }
-}
+};
 
-export const getUserProfile = async (req, res) => {
-    try {
-        const userId = req.user._id;
-        const user = await User.findById(userId).select("-password");
+// ======================================================
+// GET USER PROFILE
+// ======================================================
 
-        if(!user){
-            return res.status(404).json({success: false, message: "User not found"});
-        }
-        res.status(200).json(user);
-    }catch(error){
-        console.log("Error in getUserProfile controller", error);
-        res.status(500).json({success: false, message: "Internal server error"});
-    }
-}
-
-
-export const forgotPassword = async (req, res) => {
-  const { email } = req.body;
-
+export const getUserProfile = async (
+  req,
+  res
+) => {
   try {
-    const user = await User.findOne({ email });
+    const userId = req.user._id;
+
+    const user = await User.findById(
+      userId
+    ).select("-password");
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
     }
 
-    const resetToken = crypto.randomBytes(32).toString("hex");
+    return res.status(200).json(user);
+
+  } catch (error) {
+    console.log(
+      "Get profile error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+// ======================================================
+// FORGOT PASSWORD
+// ======================================================
+
+export const forgotPassword = async (
+  req,
+  res
+) => {
+  try {
+    const { email } = req.body;
+
+    const normalizedEmail = email
+      ?.toLowerCase()
+      .trim();
+
+    const user = await User.findOne({
+      email: normalizedEmail,
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // GENERATE TOKEN
+    const resetToken = crypto
+      .randomBytes(32)
+      .toString("hex");
 
     const hashedToken = crypto
       .createHash("sha256")
       .update(resetToken)
       .digest("hex");
 
-    user.resetPasswordToken = hashedToken;
-    user.resetPasswordExpire = Date.now() + 1000 * 60 * 15;
+    user.resetPasswordToken =
+      hashedToken;
+
+    user.resetPasswordExpire =
+      Date.now() + 1000 * 60 * 15;
 
     await user.save();
 
-    // 🔥 USE YOUR WRAPPER
+    // SEND EMAIL
     try {
-      await sendResetEmail(user, resetToken);
+      await sendResetEmail(
+        user,
+        resetToken
+      );
     } catch (emailErr) {
-      console.log("EMAIL ERROR:", emailErr.message);
-      // optional: clear token if email fails
+      console.log(
+        "Reset email error:",
+        emailErr.message
+      );
     }
 
-    res.json({ message: "Reset link sent to email" });
+    return res.status(200).json({
+      success: true,
+      message:
+        "Reset link sent to email",
+    });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    console.log(
+      "Forgot password error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };
 
-//reset password
-export const resetPassword = async (req, res) => {
+// ======================================================
+// RESET PASSWORD
+// ======================================================
+
+export const resetPassword = async (
+  req,
+  res
+) => {
   try {
     const { token } = req.params;
     const { password } = req.body;
 
-    if (!password || password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    if (
+      !password ||
+      password.length < 6
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Password must be at least 6 characters",
+      });
     }
 
     const hashedToken = crypto
@@ -302,30 +468,59 @@ export const resetPassword = async (req, res) => {
       .digest("hex");
 
     const user = await User.findOne({
-      resetPasswordToken: hashedToken,
-      resetPasswordExpire: { $gt: Date.now() },
+      resetPasswordToken:
+        hashedToken,
+
+      resetPasswordExpire: {
+        $gt: Date.now(),
+      },
     });
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid or expired token" });
+      return res.status(400).json({
+        success: false,
+        message:
+          "Invalid or expired token",
+      });
     }
 
     user.password = password;
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpire = undefined;
+
+    user.resetPasswordToken =
+      undefined;
+
+    user.resetPasswordExpire =
+      undefined;
 
     await user.save();
 
-    res.json({ message: "Password reset successful" });
+    return res.status(200).json({
+      success: true,
+      message:
+        "Password reset successful",
+    });
 
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Server error" });
+    console.log(
+      "Reset password error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };
 
-//verify user logic
-export const verifyEmail = async (req, res) => {
+// ======================================================
+// VERIFY EMAIL
+// ======================================================
+
+export const verifyEmail = async (
+  req,
+  res
+) => {
   try {
     const { token } = req.params;
 
@@ -336,32 +531,52 @@ export const verifyEmail = async (req, res) => {
 
     const user = await User.findOne({
       verifyToken: hashedToken,
-      verifyTokenExpire: { $gt: Date.now() },
+
+      verifyTokenExpire: {
+        $gt: Date.now(),
+      },
     });
 
     if (!user) {
       return res.status(400).json({
         success: false,
-        message: "Invalid or expired verification link",
+        message:
+          "Invalid or expired verification link",
       });
     }
 
-    // ✅ Activate account
+    // VERIFY ACCOUNT
     user.isVerified = true;
+
     user.verifyToken = undefined;
-    user.verifyTokenExpire = undefined;
+
+    user.verifyTokenExpire =
+      undefined;
 
     await user.save();
 
-    // 🔥 AUTO LOGIN
-    const { accessToken, refreshToken } = await generateTokens(user._id);
+    // AUTO LOGIN
+    const {
+      accessToken,
+      refreshToken,
+    } = await generateTokens(user._id);
 
-    await storeRefreshToken(user._id, refreshToken);
-    setCookies(res, accessToken, refreshToken);
+    await storeRefreshToken(
+      user._id,
+      refreshToken
+    );
+
+    setCookies(
+      res,
+      accessToken,
+      refreshToken
+    );
 
     return res.status(200).json({
       success: true,
-      message: "Email verified successfully",
+      message:
+        "Email verified successfully",
+
       user: {
         _id: user._id,
         name: user.name,
@@ -371,94 +586,10 @@ export const verifyEmail = async (req, res) => {
     });
 
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
-  }
-};
-
-//resend verification logic
-export const resendVerification = async (req, res) => {
-  try {
-    const { email } = req.body;
-
-    // ================= VALIDATION =================
-    if (!email) {
-      return res.status(400).json({
-        success: false,
-        message: "Email is required",
-      });
-    }
-
-    const normalizedEmail = email.toLowerCase().trim();
-
-    // ================= RATE LIMIT =================
-    const cooldownKey = `resend_verify:${normalizedEmail}`;
-
-    const ttl = await redis.ttl(cooldownKey);
-
-    // 🔥 If still cooling down → send remaining time
-    if (ttl > 0) {
-      return res.status(429).json({
-        success: false,
-        message: `Please wait ${ttl}s before requesting another email`,
-        retryAfter: ttl, // 🔥 frontend uses this
-      });
-    }
-
-    // Set cooldown (60 seconds)
-    await redis.set(cooldownKey, "1", { EX: 60 });
-
-    // ================= FIND USER =================
-    const user = await User.findOne({ email: normalizedEmail });
-
-    // 🔐 Prevent email enumeration
-    if (!user) {
-      return res.status(200).json({
-        success: true,
-        message: "If an account exists, a verification email has been sent",
-      });
-    }
-
-    if (user.isVerified) {
-      return res.status(400).json({
-        success: false,
-        message: "Account already verified",
-      });
-    }
-
-    // ================= TOKEN =================
-    const verifyToken = crypto.randomBytes(32).toString("hex");
-
-    const hashedToken = crypto
-      .createHash("sha256")
-      .update(verifyToken)
-      .digest("hex");
-
-    user.verifyToken = hashedToken;
-    user.verifyTokenExpire = Date.now() + 1000 * 60 * 60; // 1 hour
-
-    await user.save();
-
-    // ================= SEND EMAIL =================
-    try {
-      await sendVerificationEmail(user, verifyToken, true);
-    } catch (emailErr) {
-      console.log("EMAIL ERROR:", emailErr.message);
-      // ❗ don't fail request because email failed
-    }
-
-    // ================= RESPONSE =================
-    return res.status(200).json({
-      success: true,
-      message: "Verification email resent successfully",
-      retryAfter: 60, // 🔥 optional: start frontend countdown immediately
-    });
-
-  } catch (error) {
-    console.log("Resend verification error:", error);
+    console.log(
+      "Verify email error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
@@ -466,3 +597,124 @@ export const resendVerification = async (req, res) => {
     });
   }
 };
+
+// ======================================================
+// RESEND VERIFICATION EMAIL
+// ======================================================
+
+export const resendVerification =
+  async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Email is required",
+        });
+      }
+
+      const normalizedEmail = email
+        .toLowerCase()
+        .trim();
+
+      // RATE LIMIT
+      const cooldownKey =
+        `resend_verify:${normalizedEmail}`;
+
+      const ttl = await redis.ttl(
+        cooldownKey
+      );
+
+      if (ttl > 0) {
+        return res.status(429).json({
+          success: false,
+          message: `Please wait ${ttl}s before requesting another email`,
+          retryAfter: ttl,
+        });
+      }
+
+      await redis.set(
+        cooldownKey,
+        "1",
+        {
+          EX: 60,
+        }
+      );
+
+      // FIND USER
+      const user =
+        await User.findOne({
+          email: normalizedEmail,
+        });
+
+      // PREVENT ENUMERATION
+      if (!user) {
+        return res.status(200).json({
+          success: true,
+          message:
+            "If an account exists, a verification email has been sent",
+        });
+      }
+
+      if (user.isVerified) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Account already verified",
+        });
+      }
+
+      // GENERATE TOKEN
+      const verifyToken = crypto
+        .randomBytes(32)
+        .toString("hex");
+
+      const hashedToken = crypto
+        .createHash("sha256")
+        .update(verifyToken)
+        .digest("hex");
+
+      user.verifyToken =
+        hashedToken;
+
+      user.verifyTokenExpire =
+        Date.now() +
+        1000 * 60 * 60;
+
+      await user.save();
+
+      // SEND EMAIL
+      try {
+        await sendVerificationEmail(
+          user,
+          verifyToken,
+          true
+        );
+      } catch (emailErr) {
+        console.log(
+          "Verification resend email error:",
+          emailErr.message
+        );
+      }
+
+      return res.status(200).json({
+        success: true,
+        message:
+          "Verification email resent successfully",
+        retryAfter: 60,
+      });
+
+    } catch (error) {
+      console.log(
+        "Resend verification error:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
+    }
+  };
