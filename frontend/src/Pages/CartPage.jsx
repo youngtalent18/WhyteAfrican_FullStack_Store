@@ -26,7 +26,7 @@ const CartPage = () => {
   }, [cart]);
 
   return (
-    <div className="h-[70vh] text-white">
+    <div className="min-h-screen bg-[#06090fef] text-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
 
         {/* HEADER */}
