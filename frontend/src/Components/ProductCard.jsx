@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { toast } from "react-hot-toast";
+import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import cartStore from "../store/cartStore";
 import userStore from "../store/userStore";
 import { useNavigate } from "react-router-dom";
@@ -10,13 +10,19 @@ const ProductCard = ({ product }) => {
   const navigate = useNavigate();
 
   const [selectedSize, setSelectedSize] = useState(null);
+  const [adding, setAdding] = useState(false);
 
-  // ================= SAFE GUARD (CRITICAL FIX) =================
+  // Reset size when product changes
+  useEffect(() => {
+    setSelectedSize(null);
+  }, [product?._id]);
+
+  // ================= SAFE GUARD =================
   if (!product || typeof product !== "object") return null;
 
   // ================= SAFE VALUES =================
-  const price = Number(product?.price || 0);
-  const discount = Number(product?.discountPercentage || 0);
+  const price = Number(product?.price ?? 0);
+  const discount = Number(product?.discountPercentage ?? 0);
 
   const hasDiscount = discount > 0;
 
@@ -29,21 +35,40 @@ const ProductCard = ({ product }) => {
     e.stopPropagation();
 
     if (!user) {
-      toast.error("Login to add products to cart", { id: "login-to-add" });
+      toast.error("Login to add products to cart", {
+        id: "login-to-add",
+      });
       return;
     }
 
-    if (Array.isArray(product?.sizes) && product.sizes.length > 0 && !selectedSize) {
-      toast.error("Please select a size", { id: "select-size" });
+    if (
+      Array.isArray(product?.sizes) &&
+      product.sizes.length > 0 &&
+      !selectedSize
+    ) {
+      toast.error("Please select a size", {
+        id: "select-size",
+      });
       return;
     }
 
     try {
+      setAdding(true);
+
       await addToCart(product, selectedSize || null);
-      toast.success(`${product?.name || "Product"} added to cart`, { id: "add-to-cart-success" });
+
+      toast.success(
+        `${product?.name || "Product"} added to cart`,
+        { id: "add-to-cart-success" }
+      );
     } catch (err) {
-      toast.error("Failed to add to cart", { id: "add-cart-error" });
       console.error("Add to cart error:", err);
+
+      toast.error("Failed to add to cart", {
+        id: "add-cart-error",
+      });
+    } finally {
+      setAdding(false);
     }
   };
 
@@ -94,7 +119,7 @@ const ProductCard = ({ product }) => {
 
         {/* PRICE */}
         <div className="flex gap-2 items-center">
-          <span className="text-emerald-400 font-semibold">
+          <span className="text-indigo-400 font-semibold">
             GHC {discountedPrice.toFixed(2)}
           </span>
 
@@ -106,44 +131,47 @@ const ProductCard = ({ product }) => {
         </div>
 
         {/* SIZES */}
-        {Array.isArray(product?.sizes) && product.sizes.length > 0 && (
-          <div className="flex gap-2 flex-wrap">
-            {product.sizes.map((size, i) => (
-              <button
-                key={i}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedSize(size);
-                }}
-                className={`px-2 py-1 text-xs rounded border ${
-                  selectedSize === size
-                    ? "bg-emerald-500 border-emerald-500 text-white"
-                    : "border-gray-600 text-gray-300"
-                }`}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-        )}
+        {Array.isArray(product?.sizes) &&
+          product.sizes.length > 0 && (
+            <div className="flex gap-2 flex-wrap">
+              {product.sizes.map((size, i) => (
+                <button
+                  key={i}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedSize(size);
+                  }}
+                  className={`px-2 py-1 text-xs rounded border transition ${
+                    selectedSize === size
+                      ? "bg-indigo-600 border-indigo-600 text-white"
+                      : "border-gray-600 text-gray-300 hover:border-gray-400"
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          )}
 
         {/* BUTTON */}
         <button
           onClick={handleAddToCart}
           disabled={
-            Array.isArray(product?.sizes) &&
-            product.sizes.length > 0 &&
-            !selectedSize
+            adding ||
+            (Array.isArray(product?.sizes) &&
+              product.sizes.length > 0 &&
+              !selectedSize)
           }
-          className={`mt-auto py-2 rounded text-sm font-medium ${
-            Array.isArray(product?.sizes) &&
-            product.sizes.length > 0 &&
-            !selectedSize
+          className={`mt-auto py-2 rounded text-sm font-medium transition ${
+            adding ||
+            (Array.isArray(product?.sizes) &&
+              product.sizes.length > 0 &&
+              !selectedSize)
               ? "bg-gray-600 cursor-not-allowed"
-              : "bg-emerald-500 hover:bg-emerald-600 text-white"
+              : "bg-indigo-600 hover:bg-indigo-500 text-white"
           }`}
         >
-          Add to Cart
+          {adding ? "Adding..." : "Add to Cart"}
         </button>
       </div>
     </div>

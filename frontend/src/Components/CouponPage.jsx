@@ -153,7 +153,7 @@ const CouponDashboard = () => {
                 bg-slate-700
                 border border-slate-600
                 outline-none
-                focus:border-emerald-500
+                focus:border-indigo-500
                 text-sm sm:text-base
               "
             />
@@ -173,7 +173,7 @@ const CouponDashboard = () => {
                 bg-slate-700
                 border border-slate-600
                 outline-none
-                focus:border-emerald-500
+                focus:border-indigo-500
                 text-sm sm:text-base
               "
             />
@@ -190,7 +190,7 @@ const CouponDashboard = () => {
                 bg-slate-700
                 border border-slate-600
                 outline-none
-                focus:border-emerald-500
+                focus:border-indigo-500
                 text-sm sm:text-base
               "
             />
@@ -206,7 +206,7 @@ const CouponDashboard = () => {
                 bg-slate-700
                 border border-slate-600
                 outline-none
-                focus:border-emerald-500
+                focus:border-indigo-500
                 text-sm sm:text-base
               "
             >
@@ -233,7 +233,7 @@ const CouponDashboard = () => {
                   bg-slate-700
                   border border-slate-600
                   outline-none
-                  focus:border-emerald-500
+                  focus:border-indigo-500
                   text-sm sm:text-base
                 "
               />
@@ -258,8 +258,8 @@ const CouponDashboard = () => {
                     cursor-not-allowed
                   `
                   : `
-                    bg-emerald-500
-                    hover:bg-emerald-600
+                    bg-indigo-600
+                    hover:bg-indigo-500
                     hover:scale-[1.01]
                   `
               }
@@ -305,7 +305,7 @@ const CouponDashboard = () => {
                 Active
               </p>
 
-              <h3 className="text-2xl font-bold text-emerald-400 mt-1">
+              <h3 className="text-2xl font-bold text-indigo-400 mt-1">
                 {
                   coupons.filter(
                     (c) => c.isActive
@@ -370,7 +370,7 @@ const CouponDashboard = () => {
                           : `
                             bg-slate-800
                             border-slate-700
-                            hover:border-emerald-500
+                            hover:border-indigo-500
                           `
                       }
                     `}
@@ -381,7 +381,7 @@ const CouponDashboard = () => {
 
                       <div className="flex items-center justify-between gap-2">
 
-                        <p className="text-lg font-semibold text-emerald-400 break-all">
+                        <p className="text-lg font-semibold text-indigo-400 break-all">
                           {c.code}
                         </p>
 

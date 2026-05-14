@@ -4,7 +4,7 @@ import userStore from "../store/userStore";
 import { ArrowRight, Loader } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "../api/axios";
-import {toast} from "react-hot-toast";
+import toast from "react-hot-toast";
 
 const OrderSummary = () => {
   const { cart, subtotal, total, discount, coupon } = cartStore();
@@ -13,16 +13,17 @@ const OrderSummary = () => {
   const [loading, setLoading] = useState(false);
   const isProcessing = useRef(false);
 
-  // shipping state
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
 
-  const formattedSubtotal = (subtotal || 0).toFixed(2);
-  const formattedTotal = (total || 0).toFixed(2);
-  const formattedSavings = (discount || 0).toFixed(2);
+  const formattedSubtotal = Number(subtotal || 0).toFixed(2);
+  const formattedTotal = Number(total || 0).toFixed(2);
+  const formattedSavings = Number(discount || 0).toFixed(2);
+
+  const isValid =
+    cart?.length > 0 && phone.trim() && address.trim();
 
   const handlePayment = async () => {
-    // prevent double click
     if (isProcessing.current) return;
 
     isProcessing.current = true;
@@ -30,16 +31,21 @@ const OrderSummary = () => {
 
     try {
       // ================= VALIDATION =================
-      if (!cart || cart.length === 0) {
-        throw new Error("Cart is empty");
+      if (!cart?.length) {
+        toast.error("Cart is empty", { id: "empty-cart" });
+        return;
       }
 
       if (!user?.email) {
-        throw new Error("User email missing");
+        toast.error("User email missing", { id: "no-email" });
+        return;
       }
 
       if (!phone.trim() || !address.trim()) {
-        throw new Error("Phone and address are required");
+        toast.error("Phone and address are required", {
+          id: "shipping-required",
+        });
+        return;
       }
 
       // ================= ITEMS =================
@@ -58,7 +64,10 @@ const OrderSummary = () => {
         couponCode: coupon?.code || null,
       };
 
-      const res = await api.post("/payment/initialize", payload);
+      const res = await api.post(
+        "/payment/initialize",
+        payload
+      );
 
       const url = res.data?.data?.authorization_url;
 
@@ -66,23 +75,26 @@ const OrderSummary = () => {
         throw new Error("Payment URL missing");
       }
 
-      // redirect to Paystack
       window.location.href = url;
     } catch (error) {
-      toast.error( error.response?.data?.message || error.message);
       console.error("Payment initialization failed:", error);
+
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "Payment failed",
+        { id: "payment-error" }
+      );
     } finally {
       isProcessing.current = false;
       setLoading(false);
     }
   };
 
-  const isValid = cart.length > 0 && phone.trim() && address.trim();
-
   return (
     <div className="bg-slate-800 border border-slate-700 p-5 rounded-xl h-fit top-5">
 
-      {/* ================= SUMMARY ================= */}
+      {/* SUMMARY */}
       <h2 className="text-lg font-semibold text-white mb-4">
         Order Summary
       </h2>
@@ -115,9 +127,8 @@ const OrderSummary = () => {
         </div>
       </div>
 
-      {/* ================= SHIPPING FORM ================= */}
+      {/* SHIPPING */}
       <div className="space-y-3 mt-4">
-
         <input
           type="tel"
           placeholder="Phone number (for delivery)"
@@ -134,16 +145,16 @@ const OrderSummary = () => {
         />
       </div>
 
-      {/* ================= BUTTON ================= */}
+      {/* BUTTON */}
       <button
         onClick={handlePayment}
         disabled={loading || !isValid}
         className={`w-full mt-5 py-3 rounded-lg font-semibold text-white transition
-        ${
-          loading || !isValid
-            ? "bg-gray-500 cursor-not-allowed"
-            : "bg-green-600 hover:bg-green-500"
-        }`}
+          ${
+            loading || !isValid
+              ? "bg-gray-500 cursor-not-allowed"
+              : "bg-indigo-500 hover:bg-indigo-400"
+          }`}
       >
         {loading ? (
           <span className="flex items-center gap-2 justify-center">
@@ -155,7 +166,7 @@ const OrderSummary = () => {
         )}
       </button>
 
-      {/* ================= LINK ================= */}
+      {/* LINK */}
       <Link
         to="/"
         className="flex gap-1 items-center justify-center mt-2 text-slate-200 text-sm underline"

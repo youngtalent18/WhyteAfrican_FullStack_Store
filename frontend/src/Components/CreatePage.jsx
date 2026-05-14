@@ -107,7 +107,7 @@ const handleOnchange = (e) => {
 
       {/* BACKGROUND GLOW */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-125 h-125 bg-emerald-500/10 blur-[120px] rounded-full" />
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-125 h-125 bg-indigo-500/10 blur-[120px] rounded-full" />
       </div>
 
       <motion.div
@@ -128,7 +128,7 @@ const handleOnchange = (e) => {
         {/* TOP HEADER */}
         <div className="relative border-b border-white/10 p-6 sm:p-8">
 
-          <div className="absolute inset-0 bg-linear-to-r from-emerald-500/10 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-r from-indigo-500/10 via-transparent to-transparent" />
 
           <div className="relative flex items-center gap-4">
             <div
@@ -137,14 +137,14 @@ const handleOnchange = (e) => {
                 bg-indigo-500/15
                 border border-indigo-500/20
                 flex items-center justify-center
-                text-indigo-400
+                text-indigo-500
               "
             >
-              <Package2 size={28} />
+              <Package2 size={20} />
             </div>
 
             <div>
-              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
                 Create Product
               </h2>
 
@@ -343,8 +343,8 @@ const handleOnchange = (e) => {
                     ${
                       newProduct.sizes.includes(size)
                         ? `
-                          bg-indigo-500
-                          border-indigo-400
+                          bg-indigo-600
+                          border-indigo-500
                           text-white
                           shadow-lg shadow-indigo-500/20
                         `
@@ -418,8 +418,8 @@ const handleOnchange = (e) => {
                   flex items-center justify-center gap-2
                   rounded-2xl
                   border border-indigo-500/20
-                  bg-indigo-500
-                  hover:bg-indigo-400
+                  bg-indigo-600
+                  hover:bg-indigo-500
                   text-white
                   font-medium
                   px-5 py-3
@@ -481,8 +481,8 @@ const handleOnchange = (e) => {
                     cursor-not-allowed
                   `
                   : `
-                    bg-indigo-500
-                    hover:bg-indigo-400
+                    bg-indigo-600
+                    hover:bg-indigo-500
                     shadow-lg shadow-indigo-500/20
                     hover:shadow-indigo-500/40
                     hover:-translate-y-0.5
