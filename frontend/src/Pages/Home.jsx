@@ -104,7 +104,7 @@ const Home = ({ search }) => {
       <FloatingContact />
 
       {/* HERO */}
-      <div className="bg-slate-800 border-b border-slate-600 px-3 py-4">
+      <div className=" px-3 py-4">
 
         <motion.h1
           initial={{ opacity: 0 }}
@@ -114,7 +114,7 @@ const Home = ({ search }) => {
           {user ? (
             <>
               Hi{" "}
-              <span className="text-emerald-400 font-extrabold underline">
+              <span className="text-indigo-500 font-extrabold underline">
                 {user.name}
               </span>
               , Explore Our Categories
@@ -124,7 +124,7 @@ const Home = ({ search }) => {
           )}
         </motion.h1>
 
-        <p className="text-emerald-400 text-center text-sm md:text-base">
+        <p className="text-indigo-400 text-center text-sm md:text-base">
           Discover premium products at great prices
         </p>
 
@@ -155,7 +155,7 @@ const Home = ({ search }) => {
                 key={i}
                 className={`h-2 rounded-full transition-all duration-300 ${
                   currentIndex === i
-                    ? "bg-emerald-400 w-5"
+                    ? "bg-indigo-500 w-5"
                     : "bg-gray-500 w-2"
                 }`}
               />
@@ -172,7 +172,7 @@ const Home = ({ search }) => {
         {/* DESKTOP GRID */}
         <div className="hidden md:grid grid-cols-4 gap-4 w-4/5 mx-auto mt-4">
           {categories.map((cat) => (
-            <CategoryCard key={cat.name} {...cat} />
+            <CategoryCard key={cat.id} {...cat} />
           ))}
         </div>
 
