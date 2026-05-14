@@ -109,7 +109,7 @@ const ProductCard = ({ product }) => {
 
       {/* CONTENT */}
       <div className="p-3 flex flex-col gap-2 flex-1">
-        <h3 className="text-white font-semibold text-sm line-clamp-1">
+        <h3 className="text-slate-700 font-semibold text-sm line-clamp-1">
           {product?.name || "Unnamed product"}
         </h3>
 
