@@ -44,7 +44,7 @@ const Navbar = ({
         {/* LOGO */}
         <Link
           to="/"
-          className="font-bold text-xl text-indigo-600"
+          className="font-bold text-xl text-indigo-500"
         >
           WhyteAfrican
         </Link>
