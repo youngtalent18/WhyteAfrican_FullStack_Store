@@ -74,7 +74,7 @@ const Navbar = ({
           {isAdmin && (
             <Link
               to="/dashboard"
-              className="flex items-center gap-1 px-3 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white"
+              className="flex items-center gap-1 px-3 py-1 rounded bg-indigo-500 hover:bg-indigo-400 text-white"
             >
               <Lock size={15} />
               Admin
