@@ -1,9 +1,9 @@
 import { BarChart, GiftIcon, PlusCircleIcon, ShoppingCartIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import CreatePage from "../Components/CreatePage.jsx";
-import ProductPage from "../Components/ProductPage.jsx";
-import AnalyticPage from "../Components/AnalyticPage.jsx";
-import CouponPage from "../Components/CouponPage.jsx";
+import CreatePage from "../Components/admin/CreatePage.jsx";
+import ProductPage from "../Components/admin/ProductPage.jsx";
+import AnalyticPage from "../Components/admin/AnalyticPage.jsx";
+import CouponPage from "../Components/admin/CouponPage.jsx";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import useProductStore from "../store/productStore.js";
