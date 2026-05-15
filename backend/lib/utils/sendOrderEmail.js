@@ -1,8 +1,12 @@
 import { sendEmail } from "../utils/sendMail.js";
 
 export const sendOrderEmailToAdmin = async (order, user) => {
+  if (!process.env.EMAIL_USER) {
+    throw new Error("EMAIL_USER is not configured");
+  }
+
   return sendEmail({
-    to: process.env.ADMIN_EMAIL,
+    to: process.env.EMAIL_USER,
     subject: `🔥 New Order - ${order.paymentReference}`,
     html: `
     <div style="font-family:Arial;padding:20px;">

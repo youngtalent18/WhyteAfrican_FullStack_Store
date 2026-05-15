@@ -1,6 +1,6 @@
 import { sendEmail } from "../utils/sendMail.js";
 export const sendVerificationEmail = async (user, token, isResend = false) => {
-  const verifyUrl = `${process.env.CLIENT_URL}/verify-email/${token}`;
+  const verifyUrl = `${process.env.CLIENT_URL}/verify-email/${token}?email=${encodeURIComponent(user.email)}`;
 
   const html = `
     <div style="font-family: Arial; padding: 20px;">

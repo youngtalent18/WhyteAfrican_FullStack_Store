@@ -118,10 +118,20 @@ export const paystackWebhook = async (req, res) => {
         const user = await User.findById(userId);
         if (!user) return;
 
-        await Promise.all([
+        const emailResults = await Promise.allSettled([
           sendOrderEmailToUser(newOrder, user),
           sendOrderEmailToAdmin(newOrder, user),
         ]);
+
+        emailResults.forEach((result, index) => {
+          if (result.status === "rejected") {
+            const target = index === 0 ? "user" : "admin";
+            console.log(
+              `ORDER EMAIL ERROR (${target}):`,
+              result.reason?.message || result.reason
+            );
+          }
+        });
       } catch (err) {
         console.log("EMAIL ERROR:", err.message);
       }

@@ -1,11 +1,28 @@
 import nodemailer from "nodemailer";
 
+const requiredEnv = [
+  "EMAIL_HOST",
+  "EMAIL_PORT",
+  "EMAIL_USER",
+  "EMAIL_PASS",
+];
+
+const missingEnv = requiredEnv.filter((key) => !process.env[key]);
+
+if (missingEnv.length) {
+  console.warn(
+    `Email configuration is incomplete. Missing: ${missingEnv.join(", ")}`
+  );
+}
+
+const emailPort = Number(process.env.EMAIL_PORT);
+
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
 
-  port: Number(process.env.EMAIL_PORT),
+  port: emailPort,
 
-  secure: false,
+  secure: emailPort === 465,
 
   auth: {
     user: process.env.EMAIL_USER,
@@ -38,8 +55,17 @@ export const sendEmail = async ({
 
     console.log(
       "EMAIL SENT:",
-      info.messageId
+      info.messageId,
+      {
+        accepted: info.accepted,
+        rejected: info.rejected,
+        response: info.response,
+      }
     );
+
+    if (info.rejected?.length) {
+      throw new Error(`Email rejected for: ${info.rejected.join(", ")}`);
+    }
 
     return info;
 

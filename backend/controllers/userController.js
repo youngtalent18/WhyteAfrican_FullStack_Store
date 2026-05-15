@@ -89,6 +89,12 @@ export const registerUser = async (req, res) => {
         "Verification email error:",
         emailErr.message
       );
+
+      return res.status(502).json({
+        success: false,
+        message:
+          "Account created, but the verification email could not be sent. Please try resending the verification email.",
+      });
     }
 
     return res.status(201).json({
@@ -418,6 +424,12 @@ export const forgotPassword = async (
         "Reset email error:",
         emailErr.message
       );
+
+      return res.status(502).json({
+        success: false,
+        message:
+          "Reset link could not be sent. Please try again later.",
+      });
     }
 
     return res.status(200).json({
@@ -697,6 +709,12 @@ export const resendVerification =
           "Verification resend email error:",
           emailErr.message
         );
+
+        return res.status(502).json({
+          success: false,
+          message:
+            "Verification email could not be sent. Please try again later.",
+        });
       }
 
       return res.status(200).json({
