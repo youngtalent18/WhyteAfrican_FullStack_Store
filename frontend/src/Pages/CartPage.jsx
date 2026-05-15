@@ -32,7 +32,7 @@ const CartPage = () => {
         {/* HEADER */}
         {cart.length > 0? (
           <div className="mb-6">
-            <h1 className="text-2xl font-semibold tracking-tight">
+            <h1 className="text-xl font-semibold tracking-tight">
               Shopping Cart
             </h1>
             <p className="text-sm text-slate-400 mt-1">

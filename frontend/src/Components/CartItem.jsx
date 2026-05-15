@@ -69,9 +69,9 @@ const CartItem = ({ item }) => {
                 mt-3
                 px-3 py-1
                 rounded-full
-                bg-emerald-500/10
-                border border-emerald-500/20
-                text-emerald-300
+                bg-indigo-500/10
+                border border-indigo-500/20
+                text-indigo-500-300
                 text-xs
                 font-medium
               "
@@ -81,7 +81,7 @@ const CartItem = ({ item }) => {
           )}
 
           <div className="mt-4">
-            <p className="text-emerald-400 font-bold text-lg">
+            <p className="text-indigo-500 font-bold text-lg">
               GHC {Number(item.price).toFixed(2)}
             </p>
           </div>
