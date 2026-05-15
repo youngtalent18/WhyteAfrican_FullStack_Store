@@ -14,9 +14,9 @@ const CartItem = ({ item }) => {
         rounded-3xl
         p-4 sm:p-5
         transition-all duration-300
-        hover:border-emerald-500/20
+        hover:border-indigo-500/20
         hover:shadow-2xl
-        hover:shadow-emerald-500/5
+        hover:shadow-indigo-500/5
       "
     >
       <div className="flex flex-col sm:flex-row gap-5 sm:items-center">
