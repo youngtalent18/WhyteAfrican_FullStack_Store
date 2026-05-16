@@ -90,16 +90,6 @@ const ProfilePage = () => {
                 <Shield size={15} />
                 {user?.role || "customer"}
               </span>
-              <span
-                className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm ${
-                  user?.isVerified
-                    ? "border-indigo-500/30 bg-indigo-500/10 text-indigo-200"
-                    : "border-amber-500/30 bg-amber-500/10 text-amber-200"
-                }`}
-              >
-                <BadgeCheck size={15} />
-                {user?.isVerified ? "Verified" : "Not verified"}
-              </span>
             </div>
           </div>
         </div>
