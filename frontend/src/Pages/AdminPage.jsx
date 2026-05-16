@@ -28,16 +28,7 @@ const AdminPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white px-3 sm:px-6 lg:px-10 py-3">
-
-      {/* TITLE */}
-      <motion.h1
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center text-md sm:text-2xl font-semibold mb-3"
-      >
-        Admin Dashboard
-      </motion.h1>
-
+      
       {/* TABS */}
       <motion.div
         initial={{ opacity: 0 }}
