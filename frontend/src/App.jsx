@@ -28,6 +28,8 @@ import userStore from "./store/userStore.js";
 import cartStore from "./store/cartStore.js";
 import useProductStore from "./store/productStore.js";
 
+const AUTO_REFRESH_AFTER_MS = 30 * 60 * 1000;
+
 function AppContent() {
   const location = useLocation();
 
@@ -38,6 +40,31 @@ function AppContent() {
   const [search, setSearch] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
   const [view, setView] = useState("login");
+
+  useEffect(() => {
+    const pageOpenedAt = Date.now();
+
+    const refreshPage = () => {
+      window.location.reload();
+    };
+
+    const refreshTimerId = window.setTimeout(refreshPage, AUTO_REFRESH_AFTER_MS);
+
+    const refreshWhenReturningAfterLongVisit = () => {
+      const hasBeenOpenTooLong = Date.now() - pageOpenedAt >= AUTO_REFRESH_AFTER_MS;
+
+      if (document.visibilityState === "visible" && hasBeenOpenTooLong) {
+        refreshPage();
+      }
+    };
+
+    document.addEventListener("visibilitychange", refreshWhenReturningAfterLongVisit);
+
+    return () => {
+      window.clearTimeout(refreshTimerId);
+      document.removeEventListener("visibilitychange", refreshWhenReturningAfterLongVisit);
+    };
+  }, []);
 
   // ================= HIDE NAVBAR =================
   const hideNavbar =
