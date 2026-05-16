@@ -79,8 +79,16 @@ export const getAdminStats = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}).select("-password _id name email isVerified");
-    return res.status(200).json(users);
+    const users = await User.find({})
+      .select("_id name email role isVerified createdAt")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      count: users.length,
+      users,
+    });
   }catch (error) {
     console.log(
       "Get all users error:",

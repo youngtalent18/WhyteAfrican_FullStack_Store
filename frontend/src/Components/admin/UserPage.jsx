@@ -23,7 +23,8 @@ const UserPage = () => {
 
     try {
       const res = await api.get("/analytics/stats/users");
-      setUsers(res.data);
+      const fetchedUsers = Array.isArray(res.data) ? res.data : res.data?.users;
+      setUsers(fetchedUsers || []);
     } catch (err) {
       console.error("Error fetching users:", err);
       setError("Failed to load users");
