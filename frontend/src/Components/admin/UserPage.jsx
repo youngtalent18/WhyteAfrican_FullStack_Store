@@ -1,11 +1,21 @@
 import { useEffect, useState } from "react";
-import { Loader, Mail, RefreshCw, UserRound, UsersRound } from "lucide-react";
+import {
+  Check,
+  Clipboard,
+  Loader,
+  Mail,
+  RefreshCw,
+  UserRound,
+  UsersRound,
+} from "lucide-react";
+import toast from "react-hot-toast";
 import api from "../../api/axios.js";
 
 const UserPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [copiedUserId, setCopiedUserId] = useState("");
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -13,7 +23,7 @@ const UserPage = () => {
 
     try {
       const res = await api.get("/analytics/stats/users");
-      setUsers(res.data?.users || []);
+      setUsers(res.data || []);
     } catch (err) {
       console.error("Error fetching users:", err);
       setError("Failed to load users");
@@ -25,6 +35,40 @@ const UserPage = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  const copyUserId = async (userId) => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(userId);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = userId;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+
+      setCopiedUserId(userId);
+      toast.success("User ID copied for coupon", {
+        duration: 2000,
+        id: "user-id-copied",
+      });
+
+      setTimeout(() => {
+        setCopiedUserId((currentId) => (currentId === userId ? "" : currentId));
+      }, 2000);
+    } catch (err) {
+      console.error("Copy user ID failed:", err);
+      toast.error("Could not copy user ID", {
+        duration: 2500,
+        id: "user-id-copy-failed",
+      });
+    }
+  };
 
   return (
     <div className="w-full space-y-4 text-white">
@@ -86,6 +130,9 @@ const UserPage = () => {
                   <th className="px-5 py-3 text-left text-xs font-semibold uppercase text-slate-300">
                     Email
                   </th>
+                  <th className="px-5 py-3 text-right text-xs font-semibold uppercase text-slate-300">
+                    Coupon
+                  </th>
                 </tr>
               </thead>
 
@@ -107,6 +154,26 @@ const UserPage = () => {
                     </td>
                     <td className="px-5 py-4 text-sm text-slate-300">
                       {user.email}
+                    </td>
+                    <td className="px-5 py-4 text-right">
+                      <button
+                        type="button"
+                        onClick={() => copyUserId(user._id)}
+                        className="inline-flex items-center justify-center gap-2 rounded-md border border-indigo-500/40 bg-indigo-500/10 px-3 py-2 text-xs font-medium text-indigo-200 transition hover:border-indigo-400 hover:bg-indigo-500/20"
+                        title="Copy user ID for user-specific coupon"
+                      >
+                        {copiedUserId === user._id ? (
+                          <>
+                            <Check size={14} />
+                            Copied
+                          </>
+                        ) : (
+                          <>
+                            <Clipboard size={14} />
+                            Copy ID
+                          </>
+                        )}
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -142,6 +209,24 @@ const UserPage = () => {
                     {user._id}
                   </p>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => copyUserId(user._id)}
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-md border border-indigo-500/40 bg-indigo-500/10 px-3 py-2 text-sm font-medium text-indigo-200 transition hover:border-indigo-400 hover:bg-indigo-500/20"
+                >
+                  {copiedUserId === user._id ? (
+                    <>
+                      <Check size={16} />
+                      Copied for Coupon
+                    </>
+                  ) : (
+                    <>
+                      <Clipboard size={16} />
+                      Copy ID for Coupon
+                    </>
+                  )}
+                </button>
               </div>
             ))}
           </div>
