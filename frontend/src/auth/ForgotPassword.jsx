@@ -57,10 +57,6 @@ const ForgotPassword = ({ setView }) => {
 
         {/* INPUT */}
         <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-700">
-            Email address
-          </label>
-
           <input
             type="email"
             placeholder="you@example.com"
