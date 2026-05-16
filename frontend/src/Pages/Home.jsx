@@ -10,6 +10,7 @@ import ProductCard from "../Components/ProductCard";
 import FeaturedProduct from "../Components/FeaturedProducts";
 import CategoryCard from "../Components/CategoryCard";
 import FloatingContact from "../Components/ContactUs.jsx";
+import { Link } from "react-router-dom";
 
 const INITIAL_PRODUCT_COUNT = 8;
 const PRODUCT_BATCH_SIZE = 8;
@@ -181,9 +182,9 @@ const Home = ({ search }) => {
           {user ? (
             <>
               Hi{" "}
-              <span className="text-indigo-500 font-extrabold underline">
+              <Link to="/profile" className="text-indigo-500 font-extrabold underline">
                 {user.name}
-              </span>
+              </Link>
               , Explore Our Categories
             </>
           ) : (
