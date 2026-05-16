@@ -88,7 +88,7 @@ const AnalyticPage = () => {
     <div className="w-full space-y-4 text-white">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="flex items-center gap-2 text-lg font-semibold sm:text-xl">
+          <h2 className="flex items-center justify-center gap-2 text-lg font-semibold sm:text-xl">
             <BarChart3 size={20} className="text-indigo-400" />
             Analytics Overview
           </h2>
