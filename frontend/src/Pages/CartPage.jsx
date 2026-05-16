@@ -1,4 +1,4 @@
-import { ShoppingCart } from "lucide-react";
+import { ArrowRight, ShoppingBag, ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEffect, useMemo } from "react";
 // eslint-disable-next-line no-unused-vars
@@ -9,6 +9,7 @@ import cartStore from "../store/cartStore.js";
 import userStore from "../store/userStore.js";
 import OrderSummary from "../Components/OrderSummary.jsx";
 import PromoCard from "../Components/PromoCard.jsx";
+import BackButton from "../Components/BackButton.jsx";
 
 const CartPage = () => {
   const { cart, getCartItems } = cartStore();
@@ -30,22 +31,27 @@ const CartPage = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
 
         {/* HEADER */}
-        {cart.length > 0? (
-          <div className="mb-6">
-            <h1 className="text-xl font-semibold tracking-tight">
-              Shopping Cart
-            </h1>
-            <p className="text-sm text-slate-400 mt-1">
-              Review your items and proceed to checkout
-            </p>
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <BackButton label="Continue browsing" />
           </div>
-        ):(
-          null
-        )}
+
+          {safeCart.length > 0 && (
+            <div className="text-left sm:text-right">
+              <h1 className="flex items-center gap-2 text-xl font-semibold tracking-tight sm:justify-end">
+                <ShoppingBag size={20} className="text-indigo-300" />
+                Shopping Cart
+              </h1>
+              <p className="text-sm text-slate-400 mt-1">
+                Review your items and proceed to checkout
+              </p>
+            </div>
+          )}
+        </div>
 
         {/* EMPTY STATE */}
         {safeCart.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-center rounded-2xl p-10 sm:p-14 min-h-[55vh]">
+          <div className="flex flex-col items-center justify-center text-center rounded-2xl border border-slate-800 bg-slate-900/70 p-10 sm:p-14 min-h-[55vh]">
 
             <div className="bg-slate-800 p-4 rounded-full mb-5">
               <ShoppingCart className="w-10 h-10 text-slate-400" />
@@ -64,6 +70,7 @@ const CartPage = () => {
             <Link
               to="/"
               className="
+                inline-flex items-center gap-2
                 mt-6
                 bg-indigo-500 hover:bg-indigo-500
                 transition
@@ -73,6 +80,7 @@ const CartPage = () => {
               "
             >
               Continue Shopping
+              <ArrowRight size={16} />
             </Link>
           </div>
         ) : (
