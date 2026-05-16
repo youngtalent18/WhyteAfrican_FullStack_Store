@@ -76,3 +76,22 @@ export const getAdminStats = async (req, res) => {
     res.status(500).json({ message: "Analytics failed" });
   }
 };
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({}).select("-password _id name email isVerified");
+    return res.status(200).json({
+      success: true,
+      users,
+    });
+  }catch (error) {
+    console.log(
+      "Get all users error:",
+      error
+    );
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};

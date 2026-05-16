@@ -614,8 +614,7 @@ export const verifyEmail = async (
 // RESEND VERIFICATION EMAIL
 // ======================================================
 
-export const resendVerification =
-  async (req, res) => {
+export const resendVerification = async (req, res) => {
     try {
       const { email } = req.body;
 
