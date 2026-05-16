@@ -1,9 +1,10 @@
-import { BarChart, GiftIcon, PlusCircleIcon, ShoppingCartIcon } from "lucide-react";
+import { BarChart, GiftIcon, PlusCircleIcon, ShoppingCartIcon, User2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import CreatePage from "../Components/admin/CreatePage.jsx";
 import ProductPage from "../Components/admin/ProductPage.jsx";
 import AnalyticPage from "../Components/admin/AnalyticPage.jsx";
 import CouponPage from "../Components/admin/CouponPage.jsx";
+import UserPage from "../Components/admin/UserPage.jsx";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import useProductStore from "../store/productStore.js";
@@ -20,6 +21,7 @@ const AdminPage = () => {
     { id: "products", label: "Products", icon: ShoppingCartIcon },
     { id: "analytics", label: "Analytics", icon: BarChart },
     { id: "coupon", label: "Coupons", icon: GiftIcon },
+    { id: "users", label: "Users", icon: User2Icon },
   ];
 
   const [activeTab, setActiveTab] = useState("create");
@@ -74,6 +76,7 @@ const AdminPage = () => {
         {activeTab === "products" && <ProductPage />}
         {activeTab === "analytics" && <AnalyticPage />}
         {activeTab === "coupon" && <CouponPage />}
+        {activeTab === "users" && <UserPage />}
       </div>
     </div>
   );
