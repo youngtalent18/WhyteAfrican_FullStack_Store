@@ -1,14 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Check,
   Clipboard,
+  Crown,
   Loader,
   Mail,
+  Search,
   RefreshCw,
   ShieldCheck,
   ShieldX,
+  ShoppingBag,
   UserRound,
   UsersRound,
+  Wallet,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../../api/axios.js";
@@ -18,6 +22,10 @@ const UserPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [copiedUserId, setCopiedUserId] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [verificationFilter, setVerificationFilter] = useState("all");
+  const [orderFilter, setOrderFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("orders");
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -86,6 +94,77 @@ const UserPage = () => {
     </span>
   );
 
+  const formatCurrency = (value = 0) =>
+    `GHC ${Number(value || 0).toFixed(2)}`;
+
+  const formatDate = (date) =>
+    date
+      ? new Date(date).toLocaleDateString(undefined, {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })
+      : "No orders yet";
+
+  const filteredUsers = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    return users
+      .filter((user) => {
+        const matchesSearch =
+          !normalizedSearch ||
+          user.name?.toLowerCase().includes(normalizedSearch) ||
+          user.email?.toLowerCase().includes(normalizedSearch) ||
+          user._id?.toLowerCase().includes(normalizedSearch);
+
+        const matchesVerification =
+          verificationFilter === "all" ||
+          (verificationFilter === "verified" && user.isVerified) ||
+          (verificationFilter === "unverified" && !user.isVerified);
+
+        const matchesOrders =
+          orderFilter === "all" ||
+          (orderFilter === "with-orders" && user.totalOrders > 0) ||
+          (orderFilter === "no-orders" && !user.totalOrders);
+
+        return matchesSearch && matchesVerification && matchesOrders;
+      })
+      .sort((a, b) => {
+        if (sortBy === "spent") {
+          return (b.totalSpent || 0) - (a.totalSpent || 0);
+        }
+
+        if (sortBy === "name") {
+          return (a.name || "").localeCompare(b.name || "");
+        }
+
+        if (sortBy === "newest") {
+          return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+        }
+
+        return (b.totalOrders || 0) - (a.totalOrders || 0);
+      });
+  }, [orderFilter, searchTerm, sortBy, users, verificationFilter]);
+
+  const topCustomers = useMemo(
+    () =>
+      [...users]
+        .filter((user) => user.totalOrders > 0)
+        .sort((a, b) => {
+          const orderDifference = (b.totalOrders || 0) - (a.totalOrders || 0);
+          return orderDifference || (b.totalSpent || 0) - (a.totalSpent || 0);
+        })
+        .slice(0, 3),
+    [users]
+  );
+
+  const verifiedCount = users.filter((user) => user.isVerified).length;
+  const customersWithOrders = users.filter((user) => user.totalOrders > 0).length;
+  const totalCustomerRevenue = users.reduce(
+    (sum, user) => sum + (user.totalSpent || 0),
+    0
+  );
+
   return (
     <div className="w-full space-y-4 text-white">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -95,7 +174,7 @@ const UserPage = () => {
             User Management
           </h2>
           <p className="mt-1 text-sm text-slate-400">
-            View registered customer accounts and contact details.
+            Search users, find top customers, and copy IDs for coupons.
           </p>
         </div>
 
@@ -109,11 +188,122 @@ const UserPage = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-lg border border-slate-700 bg-slate-800 p-4">
           <p className="text-sm text-slate-400">Total Users</p>
           <p className="mt-1 text-2xl font-bold">{users.length}</p>
         </div>
+        <div className="rounded-lg border border-slate-700 bg-slate-800 p-4">
+          <p className="text-sm text-slate-400">Verified Users</p>
+          <p className="mt-1 text-2xl font-bold text-indigo-300">
+            {verifiedCount}
+          </p>
+        </div>
+        <div className="rounded-lg border border-slate-700 bg-slate-800 p-4">
+          <p className="text-sm text-slate-400">Customers With Orders</p>
+          <p className="mt-1 text-2xl font-bold">{customersWithOrders}</p>
+        </div>
+        <div className="rounded-lg border border-slate-700 bg-slate-800 p-4">
+          <p className="text-sm text-slate-400">Customer Revenue</p>
+          <p className="mt-1 text-2xl font-bold">
+            {formatCurrency(totalCustomerRevenue)}
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-slate-700 bg-slate-800 p-4">
+        <div className="mb-3 flex items-center gap-2">
+          <Crown size={18} className="text-indigo-300" />
+          <h3 className="text-sm font-semibold uppercase text-slate-300">
+            Top Customers
+          </h3>
+        </div>
+
+        {topCustomers.length === 0 ? (
+          <p className="text-sm text-slate-400">No customer orders yet.</p>
+        ) : (
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+            {topCustomers.map((user, index) => (
+              <div
+                key={user._id}
+                className="rounded-lg border border-indigo-500/20 bg-slate-900/60 p-3"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-xs text-indigo-300">#{index + 1}</p>
+                    <p className="truncate text-sm font-semibold">
+                      {user.name || "Unnamed user"}
+                    </p>
+                    <p className="truncate text-xs text-slate-400">
+                      {user.email}
+                    </p>
+                  </div>
+                  <Crown size={17} className="shrink-0 text-indigo-300" />
+                </div>
+
+                <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                  <div className="rounded-md bg-slate-800 p-2">
+                    <p className="text-slate-500">Orders</p>
+                    <p className="mt-1 font-semibold">{user.totalOrders}</p>
+                  </div>
+                  <div className="rounded-md bg-slate-800 p-2">
+                    <p className="text-slate-500">Spent</p>
+                    <p className="mt-1 font-semibold">
+                      {formatCurrency(user.totalSpent)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 rounded-lg border border-slate-700 bg-slate-800 p-4 lg:grid-cols-[1fr_auto_auto_auto]">
+        <div className="relative">
+          <Search
+            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+          />
+          <input
+            type="search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by name, email, or user ID"
+            className="w-full rounded-md border border-slate-700 bg-slate-900 py-2 pl-9 pr-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-500"
+          />
+        </div>
+
+        <select
+          value={verificationFilter}
+          onChange={(e) => setVerificationFilter(e.target.value)}
+          className="rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white outline-none transition focus:border-indigo-500"
+        >
+          <option value="all">All status</option>
+          <option value="verified">Verified</option>
+          <option value="unverified">Not verified</option>
+        </select>
+
+        <select
+          value={orderFilter}
+          onChange={(e) => setOrderFilter(e.target.value)}
+          className="rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white outline-none transition focus:border-indigo-500"
+        >
+          <option value="all">All customers</option>
+          <option value="with-orders">With orders</option>
+          <option value="no-orders">No orders</option>
+        </select>
+
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white outline-none transition focus:border-indigo-500"
+        >
+          <option value="orders">Most orders</option>
+          <option value="spent">Highest spend</option>
+          <option value="newest">Newest users</option>
+          <option value="name">Name A-Z</option>
+        </select>
       </div>
 
       {error && (
@@ -131,10 +321,14 @@ const UserPage = () => {
         <div className="rounded-lg border border-slate-700 bg-slate-800 p-8 text-center text-sm text-slate-400">
           No users found.
         </div>
+      ) : filteredUsers.length === 0 ? (
+        <div className="rounded-lg border border-slate-700 bg-slate-800 p-8 text-center text-sm text-slate-400">
+          No users match your filters.
+        </div>
       ) : (
         <>
-          <div className="hidden overflow-hidden rounded-lg border border-slate-700 md:block">
-            <table className="min-w-full divide-y divide-slate-700">
+          <div className="hidden overflow-x-auto rounded-lg border border-slate-700 md:block">
+            <table className="min-w-[1120px] divide-y divide-slate-700">
               <thead className="bg-slate-800">
                 <tr>
                   <th className="px-5 py-3 text-left text-xs font-semibold uppercase text-slate-300">
@@ -149,6 +343,15 @@ const UserPage = () => {
                   <th className="px-5 py-3 text-left text-xs font-semibold uppercase text-slate-300">
                     Status
                   </th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase text-slate-300">
+                    Orders
+                  </th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase text-slate-300">
+                    Total Spent
+                  </th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase text-slate-300">
+                    Last Order
+                  </th>
                   <th className="px-5 py-3 text-right text-xs font-semibold uppercase text-slate-300">
                     Coupon
                   </th>
@@ -156,7 +359,7 @@ const UserPage = () => {
               </thead>
 
               <tbody className="divide-y divide-slate-700 bg-slate-800/70">
-                {users.map((user) => (
+                {filteredUsers.map((user) => (
                   <tr key={user._id} className="transition hover:bg-slate-700/70">
                     <td className="max-w-xs px-5 py-4 font-mono text-xs text-slate-300">
                       {user._id}
@@ -176,6 +379,21 @@ const UserPage = () => {
                     </td>
                     <td className="px-5 py-4">
                       <VerificationBadge isVerified={user.isVerified} />
+                    </td>
+                    <td className="px-5 py-4 text-sm text-slate-300">
+                      <span className="inline-flex items-center gap-1.5">
+                        <ShoppingBag size={14} className="text-slate-500" />
+                        {user.totalOrders || 0}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4 text-sm text-slate-300">
+                      <span className="inline-flex items-center gap-1.5">
+                        <Wallet size={14} className="text-slate-500" />
+                        {formatCurrency(user.totalSpent)}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4 text-sm text-slate-300">
+                      {formatDate(user.lastOrderAt)}
                     </td>
                     <td className="px-5 py-4 text-right">
                       <button
@@ -204,7 +422,7 @@ const UserPage = () => {
           </div>
 
           <div className="space-y-3 md:hidden">
-            {users.map((user) => (
+            {filteredUsers.map((user) => (
               <div
                 key={user._id}
                 className="rounded-lg border border-slate-700 bg-slate-800 p-4"
@@ -232,6 +450,28 @@ const UserPage = () => {
                   <p className="text-xs uppercase text-slate-500">User ID</p>
                   <p className="mt-1 break-all font-mono text-xs text-slate-300">
                     {user._id}
+                  </p>
+                </div>
+
+                <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                  <div className="rounded-md bg-slate-900/70 p-3">
+                    <p className="text-slate-500">Orders</p>
+                    <p className="mt-1 font-semibold text-slate-200">
+                      {user.totalOrders || 0}
+                    </p>
+                  </div>
+                  <div className="rounded-md bg-slate-900/70 p-3">
+                    <p className="text-slate-500">Spent</p>
+                    <p className="mt-1 font-semibold text-slate-200">
+                      {formatCurrency(user.totalSpent)}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-2 rounded-md bg-slate-900/70 p-3 text-xs">
+                  <p className="text-slate-500">Last Order</p>
+                  <p className="mt-1 text-slate-300">
+                    {formatDate(user.lastOrderAt)}
                   </p>
                 </div>
 

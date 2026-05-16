@@ -79,15 +79,54 @@ export const getAdminStats = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({})
+    const [users, orderStats] = await Promise.all([
+      User.find({})
       .select("_id name email role isVerified createdAt")
       .sort({ createdAt: -1 })
-      .lean();
+        .lean(),
+      Order.aggregate([
+        {
+          $group: {
+            _id: "$user",
+            totalOrders: { $sum: 1 },
+            totalSpent: { $sum: "$total" },
+            lastOrderAt: { $max: "$createdAt" },
+          },
+        },
+      ]),
+    ]);
+
+    const orderStatsByUser = {};
+
+    orderStats.forEach((stat) => {
+      if (!stat._id) return;
+
+      orderStatsByUser[stat._id.toString()] = {
+        totalOrders: stat.totalOrders || 0,
+        totalSpent: stat.totalSpent || 0,
+        lastOrderAt: stat.lastOrderAt || null,
+      };
+    });
+
+    const usersWithStats = users.map((user) => {
+      const stats = orderStatsByUser[user._id.toString()] || {
+        totalOrders: 0,
+        totalSpent: 0,
+        lastOrderAt: null,
+      };
+
+      return {
+        ...user,
+        ...stats,
+        averageOrderValue:
+          stats.totalOrders > 0 ? stats.totalSpent / stats.totalOrders : 0,
+      };
+    });
 
     return res.status(200).json({
       success: true,
-      count: users.length,
-      users,
+      count: usersWithStats.length,
+      users: usersWithStats,
     });
   }catch (error) {
     console.log(
