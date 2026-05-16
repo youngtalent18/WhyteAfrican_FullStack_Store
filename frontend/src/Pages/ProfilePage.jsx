@@ -128,24 +128,24 @@ const ProfilePage = () => {
             <h2 className="text-lg font-semibold">Account Details</h2>
 
             <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="rounded-xl bg-slate-950 p-4">
+              <div className="rounded-xl bg-slate-800 p-4">
                 <p className="text-xs uppercase text-slate-500">Full Name</p>
                 <p className="mt-1 text-sm text-slate-200">{user?.name}</p>
               </div>
-              <div className="rounded-xl bg-slate-950 p-4">
+              <div className="rounded-xl bg-slate-800 p-4">
                 <p className="text-xs uppercase text-slate-500">Email</p>
                 <p className="mt-1 break-all text-sm text-slate-200">
                   {user?.email}
                 </p>
               </div>
-              <div className="rounded-xl bg-slate-950 p-4">
+              <div className="rounded-xl bg-slate-800 p-4">
                 <p className="text-xs uppercase text-slate-500">Member Since</p>
                 <p className="mt-1 flex items-center gap-2 text-sm text-slate-200">
                   <CalendarDays size={15} className="text-slate-500" />
                   {joinedDate}
                 </p>
               </div>
-              <div className="rounded-xl bg-slate-950 p-4">
+              <div className="rounded-xl bg-slate-800 p-4">
                 <p className="text-xs uppercase text-slate-500">Cart Value</p>
                 <p className="mt-1 text-sm text-slate-200">
                   GHC {Number(subtotal || 0).toFixed(2)}
@@ -174,7 +174,7 @@ const ProfilePage = () => {
 
               <Link
                 to="/cart"
-                className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-slate-200 transition hover:border-indigo-500/40 hover:text-indigo-200"
+                className="flex items-center justify-between rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-slate-200 transition hover:border-indigo-500/40 hover:text-indigo-200"
               >
                 <span className="flex items-center gap-2">
                   <ShoppingCart size={16} />
@@ -209,7 +209,7 @@ const ProfilePage = () => {
               {orders.slice(0, 3).map((order) => (
                 <div
                   key={order._id}
-                  className="flex flex-col gap-2 rounded-xl bg-slate-950 p-4 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded-xl bg-slate-700 p-4 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-slate-200">
