@@ -150,7 +150,7 @@ const ProfilePage = () => {
             <div className="mt-5 space-y-3">
               <Link
                 to="/orders"
-                className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-slate-200 transition hover:border-indigo-500/40 hover:text-indigo-200"
+                className="flex items-center justify-between rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-slate-200 transition hover:border-indigo-500/40 hover:text-indigo-200"
               >
                 <span className="flex items-center gap-2">
                   <Package size={16} />
@@ -199,7 +199,7 @@ const ProfilePage = () => {
               {orders.slice(0, 3).map((order) => (
                 <div
                   key={order._id}
-                  className="flex flex-col gap-2 rounded-xl bg-slate-700 p-4 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded-xl bg-slate-800 p-4 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-slate-200">
