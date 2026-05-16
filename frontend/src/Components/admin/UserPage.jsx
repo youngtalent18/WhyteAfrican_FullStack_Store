@@ -23,7 +23,7 @@ const UserPage = () => {
 
     try {
       const res = await api.get("/analytics/stats/users");
-      setUsers(res.data || []);
+      setUsers(res.data);
     } catch (err) {
       console.error("Error fetching users:", err);
       setError("Failed to load users");
