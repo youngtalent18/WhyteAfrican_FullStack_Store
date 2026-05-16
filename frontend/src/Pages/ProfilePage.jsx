@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import {
+  ArrowRight,
   BadgeCheck,
   CalendarDays,
   Mail,
@@ -165,7 +166,10 @@ const ProfilePage = () => {
                   <Package size={16} />
                   View Orders
                 </span>
-                <span>{orders.length}</span>
+                <span className="flex items-center gap-2 text-slate-400">
+                  {orders.length}
+                  <ArrowRight size={15} />
+                </span>
               </Link>
 
               <Link
@@ -176,14 +180,18 @@ const ProfilePage = () => {
                   <ShoppingCart size={16} />
                   Open Cart
                 </span>
-                <span>{cart.length}</span>
+                <span className="flex items-center gap-2 text-slate-400">
+                  {cart.length}
+                  <ArrowRight size={15} />
+                </span>
               </Link>
 
               <Link
                 to="/"
-                className="block rounded-xl bg-indigo-600 px-4 py-3 text-center text-sm font-medium text-white transition hover:bg-indigo-500"
+                className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-center text-sm font-medium text-white transition hover:bg-indigo-500"
               >
                 Continue Shopping
+                <ArrowRight size={16} />
               </Link>
             </div>
           </div>
