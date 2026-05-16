@@ -288,7 +288,7 @@ const Home = ({ search }) => {
       {!loading && filteredProducts.length > 0 && (
         <div
           ref={loadMoreRef}
-          className="mx-auto mt-5 flex min-h-12 w-[95%] items-center justify-center rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-3 text-sm text-slate-400"
+          className="mx-auto mt-5 flex min-h-12 w-[95%] items-center justify-center rounded-xl px-4 py-3 text-sm text-slate-400"
         >
           {hasMoreProducts ? (
             <button
