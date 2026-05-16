@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   BadgePercent,
@@ -79,6 +79,12 @@ const ProductPage = () => {
 
   const hasMoreProducts = visibleCount < filteredProducts.length;
 
+  const loadMoreProducts = useCallback(() => {
+    setVisibleCount((currentCount) =>
+      Math.min(currentCount + PRODUCT_BATCH_SIZE, filteredProducts.length)
+    );
+  }, [filteredProducts.length]);
+
   useEffect(() => {
     const currentRef = loadMoreRef.current;
 
@@ -88,9 +94,7 @@ const ProductPage = () => {
       ([entry]) => {
         if (!entry.isIntersecting) return;
 
-        setVisibleCount((currentCount) =>
-          Math.min(currentCount + PRODUCT_BATCH_SIZE, filteredProducts.length)
-        );
+        loadMoreProducts();
       },
       { rootMargin: "240px 0px" }
     );
@@ -98,7 +102,7 @@ const ProductPage = () => {
     observer.observe(currentRef);
 
     return () => observer.disconnect();
-  }, [filteredProducts.length, hasMoreProducts]);
+  }, [hasMoreProducts, loadMoreProducts, visibleCount]);
 
   const featuredCount = products.filter((product) => product.isFeatured).length;
   const discountedCount = products.filter(
@@ -463,7 +467,13 @@ const ProductPage = () => {
             className="flex min-h-12 items-center justify-center rounded-lg border border-slate-700 bg-slate-800/60 p-3 text-sm text-slate-400"
           >
             {hasMoreProducts ? (
-              <span>Loading more products...</span>
+              <button
+                type="button"
+                onClick={loadMoreProducts}
+                className="rounded-md border border-indigo-500/30 bg-indigo-500/10 px-4 py-2 text-indigo-200 transition hover:bg-indigo-500/20"
+              >
+                Load more products
+              </button>
             ) : (
               <span>
                 Showing {visibleProducts.length} of {filteredProducts.length} products

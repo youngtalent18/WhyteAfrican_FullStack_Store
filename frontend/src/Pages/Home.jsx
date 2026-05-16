@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import Feature from "../Components/Feature";
 import Sort from "../Components/Sort";
 import useProductStore from "../store/productStore";
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import userStore from "../store/userStore";
 import Footer from "../Components/Footer";
 import ProductSkeleton from "../Components/ProductSkeleton";
@@ -57,6 +57,21 @@ const Home = ({ search }) => {
   const visibleProducts = filteredProducts.slice(0, visibleCount);
   const hasMoreProducts = visibleCount < filteredProducts.length;
 
+  const loadMoreProducts = useCallback(() => {
+    setProductScroll((current) => {
+      const currentCount =
+        current.key === productFilterKey ? current.count : INITIAL_PRODUCT_COUNT;
+
+      return {
+        key: productFilterKey,
+        count: Math.min(
+          currentCount + PRODUCT_BATCH_SIZE,
+          filteredProducts.length
+        ),
+      };
+    });
+  }, [filteredProducts.length, productFilterKey]);
+
   const handleCategoryChange = (nextCategory) => {
     setCategory(nextCategory);
     setProductScroll({
@@ -82,20 +97,7 @@ const Home = ({ search }) => {
       ([entry]) => {
         if (!entry.isIntersecting) return;
 
-        setProductScroll((current) => {
-          const currentCount =
-            current.key === productFilterKey
-              ? current.count
-              : INITIAL_PRODUCT_COUNT;
-
-          return {
-            key: productFilterKey,
-            count: Math.min(
-              currentCount + PRODUCT_BATCH_SIZE,
-              filteredProducts.length
-            ),
-          };
-        });
+        loadMoreProducts();
       },
       { rootMargin: "260px 0px" }
     );
@@ -103,7 +105,7 @@ const Home = ({ search }) => {
     observer.observe(currentRef);
 
     return () => observer.disconnect();
-  }, [filteredProducts.length, hasMoreProducts, productFilterKey]);
+  }, [hasMoreProducts, loadMoreProducts, productFilterKey, visibleCount]);
 
   const categories = [
     {id: "1", href: "bags", name: "Bags", imageUrl: "/bagB.avif" },
@@ -289,7 +291,13 @@ const Home = ({ search }) => {
           className="mx-auto mt-5 flex min-h-12 w-[95%] items-center justify-center rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-3 text-sm text-slate-400"
         >
           {hasMoreProducts ? (
-            <span>Loading more products...</span>
+            <button
+              type="button"
+              onClick={loadMoreProducts}
+              className="rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-4 py-2 text-indigo-200 transition hover:bg-indigo-500/20"
+            >
+              Load more products
+            </button>
           ) : (
             <span>
               Showing {visibleProducts.length} of {filteredProducts.length} products
