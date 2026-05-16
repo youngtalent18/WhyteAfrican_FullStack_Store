@@ -5,6 +5,8 @@ import {
   Loader,
   Mail,
   RefreshCw,
+  ShieldCheck,
+  ShieldX,
   UserRound,
   UsersRound,
 } from "lucide-react";
@@ -71,6 +73,19 @@ const UserPage = () => {
     }
   };
 
+  const VerificationBadge = ({ isVerified }) => (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${
+        isVerified
+          ? "border-indigo-500/40 bg-indigo-500/10 text-indigo-200"
+          : "border-slate-600 bg-slate-700/70 text-slate-300"
+      }`}
+    >
+      {isVerified ? <ShieldCheck size={13} /> : <ShieldX size={13} />}
+      {isVerified ? "Verified" : "Not Verified"}
+    </span>
+  );
+
   return (
     <div className="w-full space-y-4 text-white">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -131,6 +146,9 @@ const UserPage = () => {
                   <th className="px-5 py-3 text-left text-xs font-semibold uppercase text-slate-300">
                     Email
                   </th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase text-slate-300">
+                    Status
+                  </th>
                   <th className="px-5 py-3 text-right text-xs font-semibold uppercase text-slate-300">
                     Coupon
                   </th>
@@ -155,6 +173,9 @@ const UserPage = () => {
                     </td>
                     <td className="px-5 py-4 text-sm text-slate-300">
                       {user.email}
+                    </td>
+                    <td className="px-5 py-4">
+                      <VerificationBadge isVerified={user.isVerified} />
                     </td>
                     <td className="px-5 py-4 text-right">
                       <button
@@ -201,6 +222,9 @@ const UserPage = () => {
                       <Mail size={14} className="shrink-0 text-slate-400" />
                       {user.email}
                     </p>
+                    <div className="mt-2">
+                      <VerificationBadge isVerified={user.isVerified} />
+                    </div>
                   </div>
                 </div>
 
