@@ -248,8 +248,9 @@ const Navbar = ({
                     logout();
                     setMenuOpen(false);
                   }}
-                  className="w-full bg-red-500 hover:bg-red-400 py-2 rounded text-white"
+                  className="w-full border border-red-500/90 bg-red-400 hover:bg-red-500 py-2 rounded text-red-500/90 flex items-center justify-center gap-1"
                 >
+                  <LogOut size={15} />
                   Logout
                 </button>
               ) : (
