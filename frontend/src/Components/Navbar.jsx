@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import {
   Lock,
   LogIn,
@@ -36,6 +36,12 @@ const Navbar = ({
   const isAdmin = user?.role === "admin";
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const mobileLinkClass = ({ isActive }) =>
+    `flex items-center gap-2 rounded-md p-2 transition ${
+      isActive
+        ? "bg-indigo-600/15 text-indigo-200 ring-1 ring-indigo-500/25"
+        : "text-slate-200 hover:bg-slate-800 hover:text-white"
+    }`;
 
   return (
     <div className="sticky top-0 z-50 bg-[#111827] border-b border-slate-800">
@@ -179,57 +185,57 @@ const Navbar = ({
             {/* LINKS */}
             <div className="flex-1 p-4 space-y-2 text-slate-200">
 
-              <Link
+              <NavLink
                 to="/"
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-2 p-2 rounded hover:bg-slate-800"
+                className={mobileLinkClass}
               >
                 <Home size={18} />
                 Home
-              </Link>
+              </NavLink>
 
               {user && (
-                <Link
+                <NavLink
                   to="/cart"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2 p-2 rounded hover:bg-slate-800"
+                  className={mobileLinkClass}
                 >
                   <ShoppingCart size={18} />
                   Cart ({cart.length})
-                </Link>
+                </NavLink>
               )}
 
               {user && (
-                <Link
+                <NavLink
                   to="/profile"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2 p-2 rounded hover:bg-slate-800"
+                  className={mobileLinkClass}
                 >
                   <UserRound size={18} />
                   Profile
-                </Link>
+                </NavLink>
               )}
 
               {user && (
-                <Link
+                <NavLink
                   to="/orders"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2 p-2 rounded hover:bg-slate-800"
+                  className={mobileLinkClass}
                 >
                   <Package size={18} />
                   Orders
-                </Link>
+                </NavLink>
               )}
 
               {isAdmin && (
-                <Link
+                <NavLink
                   to="/dashboard"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2 p-2 text-indigo-500"
+                  className={mobileLinkClass}
                 >
                   <Lock size={18} />
                   Admin Panel
-                </Link>
+                </NavLink>
               )}
             </div>
 
