@@ -64,14 +64,21 @@ export const userStore = create((set) => ({
       // 🔥 STEP 3: LOAD USER-SPECIFIC CART
       await cartStore.getState().getCartItems();
 
-      toast.success("Login successful", { duration: 3000 }, {id: "login-success"});
+      toast.success("Login successful", {
+        duration: 3000,
+        id: "login-success",
+      });
 
       return res.data;
     } catch (error) {
       set({ loading: false });
 
       toast.error(
-        error.response?.data?.message || "Login failed", { duration: 3000 }, {id: "login-failed"}
+        error.response?.data?.message || "Login failed",
+        {
+          duration: 3000,
+          id: "login-failed",
+        }
       );
 
       console.log("Login error:", error);
@@ -91,12 +98,19 @@ export const userStore = create((set) => ({
       // 🔥 STEP 2: CLEAR CART + COUPON
       cartStore.getState().clearCart();
 
-      toast.success("Logged out", { duration: 3000 }, {id: "logout-success"});
+      toast.success("Logged out", {
+        duration: 3000,
+        id: "logout-success",
+      });
     } catch (error) {
       console.log("Logout error:", error);
 
       toast.error(
-        error.response?.data?.message || "Logout failed", { duration: 3000 }, {id: "logout-failed"}
+        error.response?.data?.message || "Logout failed",
+        {
+          duration: 3000,
+          id: "logout-failed",
+        }
       );
     }
   },

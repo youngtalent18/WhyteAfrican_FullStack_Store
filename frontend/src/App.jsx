@@ -110,7 +110,48 @@ function AppContent() {
         />
       )}
 
-      <Toaster position="top-left" />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: "#0f172a",
+            color: "#c7d2fe",
+            border: "1px solid rgba(99, 102, 241, 0.35)",
+            borderRadius: "10px",
+            boxShadow: "0 18px 45px rgba(2, 6, 23, 0.35)",
+            fontSize: "14px",
+            fontWeight: 500,
+            padding: "12px 14px",
+          },
+          iconTheme: {
+            primary: "#818cf8",
+            secondary: "#0f172a",
+          },
+          success: {
+            style: {
+              background: "#0f172a",
+              color: "#c7d2fe",
+              border: "1px solid rgba(99, 102, 241, 0.45)",
+            },
+            iconTheme: {
+              primary: "#818cf8",
+              secondary: "#0f172a",
+            },
+          },
+          error: {
+            style: {
+              background: "#0f172a",
+              color: "#c7d2fe",
+              border: "1px solid rgba(129, 140, 248, 0.45)",
+            },
+            iconTheme: {
+              primary: "#a5b4fc",
+              secondary: "#0f172a",
+            },
+          },
+        }}
+      />
 
       {/* ROUTES */}
       <Routes>
