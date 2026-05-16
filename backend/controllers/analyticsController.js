@@ -80,10 +80,7 @@ export const getAdminStats = async (req, res) => {
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({}).select("-password _id name email isVerified");
-    return res.status(200).json({
-      success: true,
-      users,
-    });
+    return res.status(200).json(users);
   }catch (error) {
     console.log(
       "Get all users error:",
