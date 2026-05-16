@@ -244,7 +244,7 @@ const ProductPage = () => {
       ) : (
         <>
           <div className="hidden overflow-x-auto rounded-lg border border-slate-700 md:block">
-            <table className="min-w-[980px] divide-y divide-slate-700">
+            <table className="min-w-245 divide-y divide-slate-700">
               <thead className="bg-slate-800">
                 <tr>
                   <th className="px-5 py-3 text-left text-xs font-semibold uppercase text-slate-300">
