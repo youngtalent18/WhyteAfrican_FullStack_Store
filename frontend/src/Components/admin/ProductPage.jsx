@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import {
   BadgePercent,
   Boxes,
@@ -12,12 +13,23 @@ import {
 import toast from "react-hot-toast";
 import useProductStore from "../../store/productStore";
 
+const INITIAL_PRODUCT_COUNT = 12;
+const PRODUCT_BATCH_SIZE = 8;
+const MotionTr = motion.tr;
+const MotionDiv = motion.div;
+
 const ProductPage = () => {
   const { products = [], deleteProduct, toggleFeatured, loading } = useProductStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [featuredFilter, setFeaturedFilter] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
+  const [visibleCount, setVisibleCount] = useState(INITIAL_PRODUCT_COUNT);
+  const loadMoreRef = useRef(null);
+
+  const resetProductScroll = () => {
+    setVisibleCount(INITIAL_PRODUCT_COUNT);
+  };
 
   const formatCurrency = (value = 0) => `GHC ${Number(value || 0).toFixed(2)}`;
 
@@ -59,6 +71,34 @@ const ProductPage = () => {
         return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
       });
   }, [categoryFilter, featuredFilter, products, searchTerm, sortBy]);
+
+  const visibleProducts = useMemo(
+    () => filteredProducts.slice(0, visibleCount),
+    [filteredProducts, visibleCount]
+  );
+
+  const hasMoreProducts = visibleCount < filteredProducts.length;
+
+  useEffect(() => {
+    const currentRef = loadMoreRef.current;
+
+    if (!currentRef || !hasMoreProducts) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+
+        setVisibleCount((currentCount) =>
+          Math.min(currentCount + PRODUCT_BATCH_SIZE, filteredProducts.length)
+        );
+      },
+      { rootMargin: "240px 0px" }
+    );
+
+    observer.observe(currentRef);
+
+    return () => observer.disconnect();
+  }, [filteredProducts.length, hasMoreProducts]);
 
   const featuredCount = products.filter((product) => product.isFeatured).length;
   const discountedCount = products.filter(
@@ -134,7 +174,10 @@ const ProductPage = () => {
           <input
             type="search"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              resetProductScroll();
+            }}
             placeholder="Search products or categories"
             className="w-full rounded-md border border-slate-700 bg-slate-900 py-2 pl-9 pr-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-500"
           />
@@ -142,7 +185,10 @@ const ProductPage = () => {
 
         <select
           value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
+          onChange={(e) => {
+            setCategoryFilter(e.target.value);
+            resetProductScroll();
+          }}
           className="rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white outline-none transition focus:border-indigo-500"
         >
           <option value="all">All categories</option>
@@ -155,7 +201,10 @@ const ProductPage = () => {
 
         <select
           value={featuredFilter}
-          onChange={(e) => setFeaturedFilter(e.target.value)}
+          onChange={(e) => {
+            setFeaturedFilter(e.target.value);
+            resetProductScroll();
+          }}
           className="rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white outline-none transition focus:border-indigo-500"
         >
           <option value="all">All products</option>
@@ -165,7 +214,10 @@ const ProductPage = () => {
 
         <select
           value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
+          onChange={(e) => {
+            setSortBy(e.target.value);
+            resetProductScroll();
+          }}
           className="rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white outline-none transition focus:border-indigo-500"
         >
           <option value="newest">Newest first</option>
@@ -217,9 +269,13 @@ const ProductPage = () => {
               </thead>
 
               <tbody className="divide-y divide-slate-700 bg-slate-800/70">
-                {filteredProducts.map((product) => (
-                  <tr
+                {visibleProducts.map((product, index) => (
+                  <MotionTr
                     key={product._id}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.25 }}
+                    transition={{ duration: 0.28, delay: Math.min(index * 0.025, 0.16) }}
                     className="transition hover:bg-slate-700/70"
                   >
                     <td className="px-5 py-4">
@@ -312,16 +368,20 @@ const ProductPage = () => {
                         </button>
                       </div>
                     </td>
-                  </tr>
+                  </MotionTr>
                 ))}
               </tbody>
             </table>
           </div>
 
           <div className="space-y-3 md:hidden">
-            {filteredProducts.map((product) => (
-              <div
+            {visibleProducts.map((product, index) => (
+              <MotionDiv
                 key={product._id}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.3, delay: Math.min(index * 0.03, 0.18) }}
                 className="rounded-lg border border-slate-700 bg-slate-800 p-4"
               >
                 <div className="flex items-start gap-3">
@@ -394,8 +454,21 @@ const ProductPage = () => {
                     Delete
                   </button>
                 </div>
-              </div>
+              </MotionDiv>
             ))}
+          </div>
+
+          <div
+            ref={loadMoreRef}
+            className="flex min-h-12 items-center justify-center rounded-lg border border-slate-700 bg-slate-800/60 p-3 text-sm text-slate-400"
+          >
+            {hasMoreProducts ? (
+              <span>Loading more products...</span>
+            ) : (
+              <span>
+                Showing {visibleProducts.length} of {filteredProducts.length} products
+              </span>
+            )}
           </div>
         </>
       )}
