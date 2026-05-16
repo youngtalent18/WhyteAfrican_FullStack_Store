@@ -12,6 +12,7 @@ import CartPage from "./Pages/CartPage.jsx";
 import AdminPage from "./Pages/AdminPage.jsx";
 import CategoryPage from "./Pages/CategoryPage.jsx";
 import OrdersPage from "./Pages/OrdersPage.jsx";
+import ProfilePage from "./Pages/ProfilePage.jsx";
 import PaymentSuccess from "./Components/PaymentSuccess.jsx";
 import ProductDetails from "./Components/ProductDetails.jsx";
 import SearchPage from "./Pages/SearchPage.jsx";
@@ -191,6 +192,12 @@ function AppContent() {
         <Route
           path="/orders"
           element={user ? <OrdersPage /> : <Navigate to="/" />}
+        />
+
+        {/* PROFILE */}
+        <Route
+          path="/profile"
+          element={user ? <ProfilePage /> : <Navigate to="/" />}
         />
 
         {/* PRODUCT DETAILS */}

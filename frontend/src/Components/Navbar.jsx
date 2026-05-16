@@ -9,6 +9,7 @@ import {
   Menu,
   X,
   Home,
+  UserRound,
 } from "lucide-react";
 
 import Search from "../Components/Search.jsx";
@@ -60,6 +61,16 @@ const Navbar = ({
           <Link className="hover:text-white" to="/">
             Home
           </Link>
+
+          {user && (
+            <Link
+              to="/profile"
+              className="flex items-center gap-1 hover:text-white"
+            >
+              <UserRound size={15} />
+              Profile
+            </Link>
+          )}
 
           {user && (
             <Link
@@ -185,6 +196,17 @@ const Navbar = ({
                 >
                   <ShoppingCart size={18} />
                   Cart ({cart.length})
+                </Link>
+              )}
+
+              {user && (
+                <Link
+                  to="/profile"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 p-2 rounded hover:bg-slate-800"
+                >
+                  <UserRound size={18} />
+                  Profile
                 </Link>
               )}
 
