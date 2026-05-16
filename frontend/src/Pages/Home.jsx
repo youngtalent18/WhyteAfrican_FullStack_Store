@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import Feature from "../Components/Feature";
 import Sort from "../Components/Sort";
@@ -12,6 +11,10 @@ import FeaturedProduct from "../Components/FeaturedProducts";
 import CategoryCard from "../Components/CategoryCard";
 import FloatingContact from "../Components/ContactUs.jsx";
 
+const INITIAL_PRODUCT_COUNT = 8;
+const PRODUCT_BATCH_SIZE = 8;
+const MotionDiv = motion.div;
+
 const Home = ({ search }) => {
   const { products, fetchAllProducts, loading } = useProductStore();
   const { user } = userStore();
@@ -22,6 +25,11 @@ const Home = ({ search }) => {
 
   const [category, setCategory] = useState("All");
   const [sortOption, setSortOption] = useState("");
+  const [productScroll, setProductScroll] = useState({
+    key: "",
+    count: INITIAL_PRODUCT_COUNT,
+  });
+  const loadMoreRef = useRef(null);
 
   const filteredProducts = useMemo(() => {
     return [...products]
@@ -36,9 +44,66 @@ const Home = ({ search }) => {
       .sort((a, b) => {
         if (sortOption === "price-low") return a.price - b.price;
         if (sortOption === "price-high") return b.price - a.price;
+        if (sortOption === "name") return a.name.localeCompare(b.name);
         return 0;
       });
   }, [products, search, category, sortOption]);
+
+  const productFilterKey = `${search || ""}-${category}-${sortOption}`;
+  const visibleCount =
+    productScroll.key === productFilterKey
+      ? productScroll.count
+      : INITIAL_PRODUCT_COUNT;
+  const visibleProducts = filteredProducts.slice(0, visibleCount);
+  const hasMoreProducts = visibleCount < filteredProducts.length;
+
+  const handleCategoryChange = (nextCategory) => {
+    setCategory(nextCategory);
+    setProductScroll({
+      key: `${search || ""}-${nextCategory}-${sortOption}`,
+      count: INITIAL_PRODUCT_COUNT,
+    });
+  };
+
+  const handleSortChange = (nextSortOption) => {
+    setSortOption(nextSortOption);
+    setProductScroll({
+      key: `${search || ""}-${category}-${nextSortOption}`,
+      count: INITIAL_PRODUCT_COUNT,
+    });
+  };
+
+  useEffect(() => {
+    const currentRef = loadMoreRef.current;
+
+    if (!currentRef || !hasMoreProducts) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+
+        setProductScroll((current) => {
+          const currentCount =
+            current.key === productFilterKey
+              ? current.count
+              : INITIAL_PRODUCT_COUNT;
+
+          return {
+            key: productFilterKey,
+            count: Math.min(
+              currentCount + PRODUCT_BATCH_SIZE,
+              filteredProducts.length
+            ),
+          };
+        });
+      },
+      { rootMargin: "260px 0px" }
+    );
+
+    observer.observe(currentRef);
+
+    return () => observer.disconnect();
+  }, [filteredProducts.length, hasMoreProducts, productFilterKey]);
 
   const categories = [
     {id: "1", href: "bags", name: "Bags", imageUrl: "/bagB.avif" },
@@ -140,9 +205,10 @@ const Home = ({ search }) => {
           >
             {categories.map((cat) => (
               <div
+                key={cat.id}
                 className="w-full shrink-0 snap-center px-2"
               >
-                <CategoryCard key={cat.id} {...cat} />
+                <CategoryCard {...cat} />
               </div>
             ))}
           </div>
@@ -181,8 +247,8 @@ const Home = ({ search }) => {
       <FeaturedProduct />
 
       <Sort
-        setSortOption={setSortOption}
-        setCategory={setCategory}
+        setSortOption={handleSortChange}
+        setCategory={handleCategoryChange}
         products={products}
       />
 
@@ -201,10 +267,36 @@ const Home = ({ search }) => {
         )}
 
         {!loading &&
-          filteredProducts.map((product) => (
-            <ProductCard key={product._id} product={product} />
+          visibleProducts.map((product, index) => (
+            <MotionDiv
+              key={product._id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.18 }}
+              transition={{
+                duration: 0.3,
+                delay: Math.min(index * 0.025, 0.16),
+              }}
+            >
+              <ProductCard product={product} />
+            </MotionDiv>
           ))}
       </div>
+
+      {!loading && filteredProducts.length > 0 && (
+        <div
+          ref={loadMoreRef}
+          className="mx-auto mt-5 flex min-h-12 w-[95%] items-center justify-center rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-3 text-sm text-slate-400"
+        >
+          {hasMoreProducts ? (
+            <span>Loading more products...</span>
+          ) : (
+            <span>
+              Showing {visibleProducts.length} of {filteredProducts.length} products
+            </span>
+          )}
+        </div>
+      )}
 
       <Footer />
     </div>
