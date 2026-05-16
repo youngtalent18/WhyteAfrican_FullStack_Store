@@ -1,4 +1,4 @@
-import { Loader, LogInIcon } from "lucide-react";
+import { Eye, EyeOff, Loader, LogInIcon } from "lucide-react";
 import userStore from "../store/userStore";
 import { useState, useEffect } from "react";
 import api from "../api/axios";
@@ -15,6 +15,7 @@ const Login = ({ setView, setModalOpen }) => {
   const [showResend, setShowResend] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [cooldown, setCooldown] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -114,16 +115,26 @@ const Login = ({ setView, setModalOpen }) => {
             </p>
           </div>
 
-          <input
-            type="password"
-            value={formData.password}
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
-            required
-            className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            placeholder="••••••••"
-          />
+          <div className="relative mt-1">
+            <input
+              type={showPassword ? "text" : "password"}
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+              required
+              className="w-full px-3 py-2.5 pr-10 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              placeholder="Password"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((current) => !current)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 transition hover:text-indigo-500"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
         </div>
 
         {/* LOGIN BUTTON */}
