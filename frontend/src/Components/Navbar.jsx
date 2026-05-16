@@ -51,8 +51,9 @@ const Navbar = ({
         {/* LOGO */}
         <Link
           to="/"
-          className="font-bold text-xl text-indigo-500"
+          className="font-bold text-xl flex items-center gap-2 text-indigo-500"
         >
+          <img src="/logo2.jpeg" alt="WhyteAfrican Logo" className="h-15 w-15 inline-block rounded-4xl mr-1" />
           WhyteAfrican
         </Link>
 
