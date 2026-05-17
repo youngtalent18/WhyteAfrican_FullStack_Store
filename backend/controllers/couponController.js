@@ -1,7 +1,11 @@
 // controllers/couponController.js
 
 import Coupon from "../model/couponModel.js";
+import User from "../model/userModel.js";
 
+const LOYALTY_REDEEM_POINTS = 100;
+const LOYALTY_DISCOUNT_PERCENTAGE = 10;
+const LOYALTY_COUPON_DAYS = 30;
 
 // ===============================
 // GET COUPON (USER + GLOBAL)
@@ -183,6 +187,69 @@ export const deleteCoupon = async (req, res) => {
 
   } catch (error) {
     console.error("DELETE ERROR:", error.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// ===============================
+// REDEEM LOYALTY POINTS
+// ===============================
+export const redeemLoyaltyCoupon = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if ((user.loyaltyPoints || 0) < LOYALTY_REDEEM_POINTS) {
+      return res.status(400).json({
+        message: `You need ${LOYALTY_REDEEM_POINTS} points to redeem a loyalty discount`,
+      });
+    }
+
+    const code = `LOYAL${user.referralCode || user._id.toString().slice(-6)}${Date.now()
+      .toString(36)
+      .toUpperCase()}`;
+
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + LOYALTY_COUPON_DAYS);
+
+    user.loyaltyPoints -= LOYALTY_REDEEM_POINTS;
+    await user.save();
+
+    const coupon = await Coupon.create({
+      code,
+      discountPercentage: LOYALTY_DISCOUNT_PERCENTAGE,
+      expiresAt,
+      userId: user._id,
+      isActive: true,
+      usageLimit: 1,
+      perUserLimit: 1,
+    });
+
+    res.status(201).json({
+      message: "Loyalty discount redeemed",
+      coupon: {
+        code: coupon.code,
+        discountPercentage: coupon.discountPercentage,
+        expiresAt: coupon.expiresAt,
+      },
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        referralCode: user.referralCode,
+        referredBy: user.referredBy,
+        referralCount: user.referralCount,
+        loyaltyPoints: user.loyaltyPoints,
+        lifetimeLoyaltyPoints: user.lifetimeLoyaltyPoints,
+        createdAt: user.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error("REDEEM LOYALTY ERROR:", error.message);
     res.status(500).json({ message: "Server error" });
   }
 };

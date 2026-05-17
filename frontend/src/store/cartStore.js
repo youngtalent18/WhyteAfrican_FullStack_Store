@@ -95,6 +95,31 @@ const cartStore = create(
         }
       },
 
+      redeemLoyaltyCoupon: async () => {
+        try {
+          set({ loading: true });
+
+          const res = await api.post("/coupon/loyalty/redeem");
+
+          set({ coupon: res.data.coupon });
+          get().syncTotals();
+
+          toast.success(res.data.message || "Loyalty discount redeemed", {
+            id: "loyalty-redeemed",
+          });
+
+          return res.data;
+        } catch (error) {
+          toast.error(error.response?.data?.message || "Could not redeem points", {
+            id: "loyalty-redeem-failed",
+          });
+
+          throw error;
+        } finally {
+          set({ loading: false });
+        }
+      },
+
       removeCoupon: () => {
         set({ coupon: null });
         get().syncTotals();

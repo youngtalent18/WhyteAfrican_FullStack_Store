@@ -6,15 +6,18 @@ import {
   CheckCircle2,
   Trash,
   Sparkles,
+  Gift,
 } from "lucide-react";
 
 import cartStore from "../store/cartStore";
+import userStore from "../store/userStore";
 import toast from "react-hot-toast";
 
 const PromoCard = () => {
   const [inputCode, setInputCode] = useState("");
 
-  const { coupon, applyCoupon, removeCoupon } = cartStore();
+  const { coupon, applyCoupon, removeCoupon, redeemLoyaltyCoupon, loading } = cartStore();
+  const { user, setUser } = userStore();
 
   const handleApplyCoupon = async () => {
     if (!inputCode.trim()) {
@@ -28,6 +31,18 @@ const PromoCard = () => {
     await applyCoupon(inputCode.trim());
 
     setInputCode("");
+  };
+
+  const handleRedeemPoints = async () => {
+    try {
+      const res = await redeemLoyaltyCoupon();
+
+      if (res?.user) {
+        setUser(res.user);
+      }
+    } catch {
+      // Toast is handled in the store.
+    }
   };
 
   return (
@@ -135,6 +150,34 @@ const PromoCard = () => {
             Apply Coupon
           </span>
         </button>
+
+        <button
+          type="button"
+          onClick={handleRedeemPoints}
+          disabled={loading || coupon || (user?.loyaltyPoints || 0) < 100}
+          className={`
+            w-full
+            rounded-2xl
+            border border-indigo-500/30
+            py-3
+            font-semibold
+            transition-all duration-200
+            ${
+              loading || coupon || (user?.loyaltyPoints || 0) < 100
+                ? "bg-slate-800 text-slate-500 cursor-not-allowed"
+                : "bg-slate-800 text-indigo-200 hover:bg-indigo-500/15"
+            }
+          `}
+        >
+          <span className="flex items-center justify-center gap-2">
+            <Gift size={18} />
+            Redeem 100 Points
+          </span>
+        </button>
+
+        <p className="text-center text-xs text-slate-500">
+          Your balance: {user?.loyaltyPoints || 0} points
+        </p>
 
         {/* ACTIVE COUPON */}
         {coupon && (

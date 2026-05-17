@@ -27,6 +27,42 @@ const userSchema = new Schema(
       default: "customer",
     },
 
+    referralCode: {
+      type: String,
+      unique: true,
+      sparse: true,
+      uppercase: true,
+      trim: true,
+    },
+
+    referredBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
+    referralRewardGranted: {
+      type: Boolean,
+      default: false,
+    },
+
+    referralCount: {
+      type: Number,
+      default: 0,
+    },
+
+    loyaltyPoints: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
+    lifetimeLoyaltyPoints: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
     // 🔐 EMAIL VERIFICATION
     isVerified: {
       type: Boolean,

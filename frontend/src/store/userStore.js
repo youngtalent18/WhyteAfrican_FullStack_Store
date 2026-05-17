@@ -8,8 +8,10 @@ export const userStore = create((set) => ({
   loading: false,
   checkingAuth: true,
 
+  setUser: (user) => set({ user }),
+
   // ================= REGISTER =================
-  register: async ({ name, email, password, confirmPassword }) => {
+  register: async ({ name, email, password, confirmPassword, referralCode }) => {
     set({ loading: true });
 
     if (password !== confirmPassword) {
@@ -22,6 +24,7 @@ export const userStore = create((set) => ({
         name,
         email,
         password,
+        referralCode: referralCode?.trim() || undefined,
       });
 
       set({ loading: false });

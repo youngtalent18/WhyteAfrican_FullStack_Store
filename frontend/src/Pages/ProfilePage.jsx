@@ -3,10 +3,13 @@ import {
   ArrowRight,
   BadgeCheck,
   CalendarDays,
+  Copy,
+  Gift,
   Mail,
   Package,
   Shield,
   ShoppingCart,
+  TicketPercent,
   UserRound,
   Wallet,
 } from "lucide-react";
@@ -14,6 +17,7 @@ import { useEffect } from "react";
 import userStore from "../store/userStore";
 import cartStore from "../store/cartStore";
 import FloatingContact from "../Components/ContactUs.jsx";
+import toast from "react-hot-toast";
 
 const ProfilePage = () => {
   const { user } = userStore();
@@ -59,7 +63,27 @@ const ProfilePage = () => {
       value: `GHC ${totalSpent.toFixed(2)}`,
       icon: Wallet,
     },
+    {
+      label: "Loyalty Points",
+      value: user?.loyaltyPoints || 0,
+      icon: Gift,
+    },
   ];
+
+  const referralLink = user?.referralCode
+    ? `${window.location.origin}/?ref=${user.referralCode}`
+    : "";
+
+  const copyReferralCode = async () => {
+    if (!user?.referralCode) return;
+
+    try {
+      await navigator.clipboard.writeText(user.referralCode);
+      toast.success("Referral code copied");
+    } catch {
+      toast.error("Could not copy referral code");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 px-4 py-6 text-white sm:px-6 lg:px-10">
@@ -94,7 +118,7 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           {profileStats.map((stat) => {
             const Icon = stat.icon;
 
@@ -145,7 +169,43 @@ const ProfilePage = () => {
           </div>
 
           <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-            <h2 className="text-lg font-semibold">Quick Actions</h2>
+            <h2 className="text-lg font-semibold">Rewards</h2>
+
+            <div className="mt-5 space-y-3">
+              <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs uppercase text-indigo-200">
+                      Referral Code
+                    </p>
+                    <p className="mt-1 break-all text-xl font-bold text-white">
+                      {user?.referralCode || "Generating..."}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={copyReferralCode}
+                    className="rounded-lg border border-indigo-400/30 p-2 text-indigo-200 transition hover:bg-indigo-500/20"
+                    aria-label="Copy referral code"
+                  >
+                    <Copy size={17} />
+                  </button>
+                </div>
+
+                <p className="mt-3 break-all text-xs text-slate-400">
+                  {referralLink}
+                </p>
+              </div>
+
+              <div className="rounded-xl bg-slate-800 p-4">
+                <p className="flex items-center gap-2 text-sm text-slate-300">
+                  <TicketPercent size={16} className="text-indigo-300" />
+                  Redeem 100 points for 10% off in your cart.
+                </p>
+              </div>
+            </div>
+
+            <h2 className="mt-6 text-lg font-semibold">Quick Actions</h2>
 
             <div className="mt-5 space-y-3">
               <Link

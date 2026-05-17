@@ -9,6 +9,43 @@ import { redis } from "../config/redis.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
+const buildUserPayload = (user) => ({
+  _id: user._id,
+  name: user.name,
+  email: user.email,
+  role: user.role,
+  referralCode: user.referralCode,
+  referredBy: user.referredBy,
+  referralCount: user.referralCount,
+  loyaltyPoints: user.loyaltyPoints,
+  lifetimeLoyaltyPoints: user.lifetimeLoyaltyPoints,
+  createdAt: user.createdAt,
+});
+
+const createReferralCode = async (name = "") => {
+  const cleanName = name.replace(/[^a-z0-9]/gi, "").slice(0, 4).toUpperCase();
+  const prefix = cleanName || "WA";
+
+  for (let attempts = 0; attempts < 5; attempts += 1) {
+    const randomCode = crypto.randomBytes(3).toString("hex").toUpperCase();
+    const code = `${prefix}${randomCode}`;
+    const exists = await User.exists({ referralCode: code });
+
+    if (!exists) return code;
+  }
+
+  return `WA${Date.now().toString(36).toUpperCase()}`;
+};
+
+const ensureReferralCode = async (user) => {
+  if (user.referralCode) return user;
+
+  user.referralCode = await createReferralCode(user.name);
+  await user.save();
+
+  return user;
+};
+
 // ======================================================
 // STORE REFRESH TOKEN
 // ======================================================
@@ -29,7 +66,7 @@ const storeRefreshToken = async (userId, refreshToken) => {
 
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, referralCode } = req.body;
 
     // VALIDATION
     if (!name || !email || !password) {
@@ -53,12 +90,31 @@ export const registerUser = async (req, res) => {
       });
     }
 
+    let referrer = null;
+
+    if (referralCode?.trim()) {
+      referrer = await User.findOne({
+        referralCode: referralCode.trim().toUpperCase(),
+      });
+
+      if (!referrer) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid referral code",
+        });
+      }
+    }
+
+    const newReferralCode = await createReferralCode(name);
+
     // CREATE USER
     const user = await User.create({
       name,
       email: normalizedEmail,
       password,
       isVerified: false,
+      referralCode: newReferralCode,
+      referredBy: referrer?._id || null,
     });
 
     // GENERATE VERIFICATION TOKEN
@@ -164,6 +220,8 @@ export const loginUser = async (req, res) => {
       });
     }
 
+    await ensureReferralCode(user);
+
     // GENERATE TOKENS
     const {
       accessToken,
@@ -190,12 +248,7 @@ export const loginUser = async (req, res) => {
       // OPTIONAL FOR FRONTEND
       accessToken,
 
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
+      user: buildUserPayload(user),
     });
 
   } catch (error) {
@@ -354,6 +407,8 @@ export const getUserProfile = async (
       });
     }
 
+    await ensureReferralCode(user);
+
     return res.status(200).json(user);
 
   } catch (error) {
@@ -412,6 +467,8 @@ export const forgotPassword = async (
       Date.now() + 1000 * 60 * 15;
 
     await user.save();
+
+    await ensureReferralCode(user);
 
     // SEND EMAIL
     try {
@@ -589,12 +646,7 @@ export const verifyEmail = async (
       message:
         "Email verified successfully",
 
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
+      user: buildUserPayload(user),
     });
 
   } catch (error) {

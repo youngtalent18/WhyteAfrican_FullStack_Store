@@ -7,6 +7,9 @@ import Coupon from "../model/couponModel.js";
 import { sendOrderEmailToAdmin, sendOrderEmailToUser } from "../lib/utils/sendOrderEmail.js";
 
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY;
+const LOYALTY_POINTS_PER_CURRENCY = 10;
+const REFERRER_BONUS_POINTS = 100;
+const REFERRED_CUSTOMER_BONUS_POINTS = 50;
 
 export const paystackWebhook = async (req, res) => {
   try {
@@ -65,6 +68,15 @@ export const paystackWebhook = async (req, res) => {
       return res.sendStatus(200);
     }
 
+    const previousPaidOrders = await Order.countDocuments({
+      user: userId,
+      status: "paid",
+    });
+
+    const loyaltyPointsEarned = Math.floor(
+      Number(total || 0) / LOYALTY_POINTS_PER_CURRENCY
+    );
+
     // ================= ORDER =================
     const newOrder = await Order.create({
       user: userId,
@@ -85,6 +97,7 @@ export const paystackWebhook = async (req, res) => {
       discountPercentage: discountPercentage || 0,
       discountAmount: discountAmount || 0,
       couponCode: couponCode || null,
+      loyaltyPointsEarned,
 
       total,
       paymentReference: reference,
@@ -96,31 +109,77 @@ export const paystackWebhook = async (req, res) => {
       const coupon = await Coupon.findOne({ code: couponCode });
 
       if (coupon) {
-        const alreadyUsed = coupon.usedBy?.some(
-          (id) => id.toString() === userId.toString()
+        const existingUsage = coupon.usedBy?.find(
+          (usage) => usage.userId?.toString() === userId.toString()
         );
 
-        if (!alreadyUsed) {
+        if (existingUsage) {
+          await Coupon.findOneAndUpdate(
+            { code: couponCode, "usedBy.userId": userId },
+            {
+              $inc: {
+                usedCount: 1,
+                "usedBy.$.count": 1,
+              },
+            }
+          );
+        } else {
           await Coupon.findOneAndUpdate(
             { code: couponCode },
             {
               $inc: { usedCount: 1 },
-              $addToSet: { usedBy: userId },
+              $push: {
+                usedBy: {
+                  userId,
+                  count: 1,
+                },
+              },
             }
           );
         }
       }
     }
 
+    // ================= LOYALTY + REFERRAL =================
+    const user = await User.findById(userId);
+
+    if (user) {
+      const pointsToAdd =
+        loyaltyPointsEarned +
+        (previousPaidOrders === 0 && user.referredBy && !user.referralRewardGranted
+          ? REFERRED_CUSTOMER_BONUS_POINTS
+          : 0);
+
+      if (pointsToAdd > 0) {
+        user.loyaltyPoints = (user.loyaltyPoints || 0) + pointsToAdd;
+        user.lifetimeLoyaltyPoints =
+          (user.lifetimeLoyaltyPoints || 0) + pointsToAdd;
+      }
+
+      if (previousPaidOrders === 0 && user.referredBy && !user.referralRewardGranted) {
+        await User.findByIdAndUpdate(user.referredBy, {
+          $inc: {
+            loyaltyPoints: REFERRER_BONUS_POINTS,
+            lifetimeLoyaltyPoints: REFERRER_BONUS_POINTS,
+            referralCount: 1,
+          },
+        });
+
+        user.referralRewardGranted = true;
+      }
+
+      await user.save();
+    }
+
     // ================= EMAIL =================
     setImmediate(async () => {
       try {
-        const user = await User.findById(userId);
-        if (!user) return;
+        const orderUser = await User.findById(userId);
+        if (!orderUser) return;
 
         const emailResults = await Promise.allSettled([
-          sendOrderEmailToUser(newOrder, user),
-          sendOrderEmailToAdmin(newOrder, user),
+          sendOrderEmailToUser(newOrder, orderUser),
+          sendOrderEmailToAdmin(newOrder, orderUser),
         ]);
 
         emailResults.forEach((result, index) => {
@@ -251,7 +310,7 @@ export const initializePayment = async (req, res) => {
 
       // 🔥 PER USER LIMIT CHECK
       const userUsage = coupon.usedBy.find(
-        (u) => u.userId.toString() === req.user._id.toString()
+        (u) => u.userId?.toString() === req.user._id.toString()
       );
 
       if (userUsage && userUsage.count >= coupon.perUserLimit) {

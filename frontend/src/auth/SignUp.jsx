@@ -12,6 +12,7 @@ const SignUp = ({ setView, setModalOpen }) => {
     email: "",
     password: "",
     confirmPassword: "",
+    referralCode: new URLSearchParams(window.location.search).get("ref") || "",
   });
 
   const { loading, register } = userStore();
@@ -50,6 +51,7 @@ const SignUp = ({ setView, setModalOpen }) => {
           email: "",
           password: "",
           confirmPassword: "",
+          referralCode: "",
         });
 
         setTimeout(() => {
@@ -113,6 +115,24 @@ const SignUp = ({ setView, setModalOpen }) => {
               setFormData((prev) => ({
                 ...prev,
                 email: e.target.value,
+              }));
+            }}
+          />
+        </div>
+
+        {/* REFERRAL CODE */}
+        <div>
+          <label className="block text-sm font-medium">Referral Code</label>
+          <input
+            type="text"
+            placeholder="Optional"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            value={formData.referralCode}
+            onChange={(e) => {
+              setErr("");
+              setFormData((prev) => ({
+                ...prev,
+                referralCode: e.target.value.toUpperCase().replace(/\s+/g, ""),
               }));
             }}
           />

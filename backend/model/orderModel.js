@@ -47,6 +47,16 @@ const orderModel = new Schema(
       default: 0,
     },
 
+    couponCode: {
+      type: String,
+      default: null,
+    },
+
+    loyaltyPointsEarned: {
+      type: Number,
+      default: 0,
+    },
+
     total: {
       type: Number,
       required: true,
