@@ -89,6 +89,15 @@ function AppContent() {
   useEffect(() => {
     const state = location.state;
 
+    const params = new URLSearchParams(location.search);
+
+    if (params.get("ref")) {
+      queueMicrotask(() => {
+        setModalOpen(true);
+        setView("signup");
+      });
+    }
+
     if (!state) return;
 
     if (state.openLogin) {
@@ -105,7 +114,7 @@ function AppContent() {
     }
 
     window.history.replaceState({}, "", location.pathname);
-  }, [location.state, location.pathname]);
+  }, [location.search, location.state, location.pathname]);
 
   // ================= CART + COUPON SYNC (FIXED) =================
   useEffect(() => {
