@@ -7,7 +7,7 @@ import Coupon from "../model/couponModel.js";
 import { sendOrderEmailToAdmin, sendOrderEmailToUser } from "../lib/utils/sendOrderEmail.js";
 
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY;
-const LOYALTY_POINTS_PER_CURRENCY = 10;
+const PURCHASE_LOYALTY_POINTS = 15;
 const REFERRER_BONUS_POINTS = 100;
 const REFERRED_CUSTOMER_BONUS_POINTS = 50;
 
@@ -73,9 +73,7 @@ export const paystackWebhook = async (req, res) => {
       status: "paid",
     });
 
-    const loyaltyPointsEarned = Math.floor(
-      Number(total || 0) / LOYALTY_POINTS_PER_CURRENCY
-    );
+    const loyaltyPointsEarned = PURCHASE_LOYALTY_POINTS;
 
     // ================= ORDER =================
     const newOrder = await Order.create({
