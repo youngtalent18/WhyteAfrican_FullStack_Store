@@ -4,7 +4,7 @@ import Coupon from "../model/couponModel.js";
 import User from "../model/userModel.js";
 
 const LOYALTY_REDEEM_POINTS = 100;
-const LOYALTY_DISCOUNT_PERCENTAGE = 10;
+const LOYALTY_DISCOUNT_PERCENTAGE = 5;
 const LOYALTY_COUPON_DAYS = 30;
 
 // ===============================

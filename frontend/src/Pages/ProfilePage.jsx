@@ -200,7 +200,7 @@ const ProfilePage = () => {
               <div className="rounded-xl bg-slate-800 p-4">
                 <p className="flex items-center gap-2 text-sm text-slate-300">
                   <TicketPercent size={16} className="text-indigo-300" />
-                  Redeem 100 points for 10% off in your cart.
+                  Redeem 100 points for 5% off in your cart.
                 </p>
               </div>
             </div>
