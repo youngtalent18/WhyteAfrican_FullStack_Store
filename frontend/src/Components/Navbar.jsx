@@ -273,6 +273,53 @@ const Navbar = ({
               </button>
             </div>
 
+            {isAdmin && (
+              <div className="border-b border-slate-800 p-4">
+                {editingLogo ? (
+                  <div className="space-y-3">
+                    <input
+                      value={logo.text}
+                      onChange={(event) =>
+                        setLogo((currentLogo) => ({
+                          ...currentLogo,
+                          text: event.target.value,
+                        }))
+                      }
+                      className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white outline-none focus:border-indigo-400"
+                      aria-label="Edit navbar logo text"
+                    />
+                    <div className="flex gap-2">
+                      <label className="flex-1 cursor-pointer rounded bg-slate-800 px-3 py-2 text-center text-sm text-slate-200 hover:bg-slate-700">
+                        Change image
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={updateLogoImage}
+                          className="sr-only"
+                          aria-label="Edit navbar logo image"
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setEditingLogo(false)}
+                        className="rounded bg-indigo-500 px-4 py-2 text-sm text-white hover:bg-indigo-400"
+                      >
+                        Done
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setEditingLogo(true)}
+                    className="w-full rounded border border-indigo-500/40 bg-indigo-500/10 px-3 py-2 text-sm text-indigo-200 hover:bg-indigo-500/20"
+                  >
+                    Edit logo
+                  </button>
+                )}
+              </div>
+            )}
+
             {/* LINKS */}
             <div className="flex-1 p-4 space-y-2 text-slate-200">
 
