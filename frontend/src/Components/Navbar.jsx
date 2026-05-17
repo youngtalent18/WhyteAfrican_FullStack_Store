@@ -19,9 +19,27 @@ import ForgotPassword from "../auth/ForgotPassword.jsx";
 import SignUp from "../auth/SignUp.jsx";
 import ResetPassword from "../auth/Reset.jsx";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import userStore from "../store/userStore.js";
 import cartStore from "../store/cartStore.js";
+
+const DEFAULT_LOGO = {
+  image: "/logo2.jpeg",
+  text: "WhyteAfrican",
+};
+
+const getSavedLogo = () => {
+  try {
+    const savedLogo = JSON.parse(localStorage.getItem("whyteAfricanLogo"));
+
+    return {
+      image: savedLogo?.image || DEFAULT_LOGO.image,
+      text: savedLogo?.text || DEFAULT_LOGO.text,
+    };
+  } catch {
+    return DEFAULT_LOGO;
+  }
+};
 
 const Navbar = ({
   search,
@@ -36,6 +54,30 @@ const Navbar = ({
   const isAdmin = user?.role === "admin";
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [logo, setLogo] = useState(getSavedLogo);
+  const [editingLogo, setEditingLogo] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem("whyteAfricanLogo", JSON.stringify(logo));
+  }, [logo]);
+
+  const updateLogoImage = (event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setLogo((currentLogo) => ({
+        ...currentLogo,
+        image: reader.result,
+      }));
+    };
+
+    reader.readAsDataURL(file);
+  };
+
   const mobileLinkClass = ({ isActive }) =>
     `flex items-center gap-2 rounded-md p-2 transition ${
       isActive
@@ -53,9 +95,54 @@ const Navbar = ({
           to="/"
           className="font-bold text-xl flex items-center gap-2 text-indigo-500"
         >
-          <img src="/logo2.jpeg" alt="WhyteAfrican Logo" className="h-15 w-15 inline-block rounded-4xl mr-1" />
-          WhyteAfrican
+          <img src={logo.image} alt={`${logo.text} Logo`} className="h-15 w-15 inline-block rounded-4xl mr-1 object-cover" />
+          <span>{logo.text}</span>
         </Link>
+
+        {isAdmin && (
+          <div className="hidden lg:flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900/70 px-2 py-1">
+            {editingLogo ? (
+              <>
+                <input
+                  value={logo.text}
+                  onChange={(event) =>
+                    setLogo((currentLogo) => ({
+                      ...currentLogo,
+                      text: event.target.value,
+                    }))
+                  }
+                  className="w-32 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-sm text-white outline-none focus:border-indigo-400"
+                  aria-label="Edit navbar logo text"
+                />
+                <label className="cursor-pointer rounded bg-slate-800 px-2 py-1 text-xs text-slate-200 hover:bg-slate-700">
+                  Image
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={updateLogoImage}
+                    className="sr-only"
+                    aria-label="Edit navbar logo image"
+                  />
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setEditingLogo(false)}
+                  className="rounded bg-indigo-500 px-2 py-1 text-xs text-white hover:bg-indigo-400"
+                >
+                  Done
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setEditingLogo(true)}
+                className="rounded px-2 py-1 text-xs text-indigo-200 hover:bg-slate-800"
+              >
+                Edit logo
+              </button>
+            )}
+          </div>
+        )}
 
         {/* SEARCH */}
         <div className="hidden sm:flex flex-1 max-w-xl mx-4">
@@ -177,7 +264,10 @@ const Navbar = ({
 
             {/* HEADER */}
             <div className="flex justify-between items-center p-4 border-b border-slate-800">
-              <h2 className="text-white font-semibold">Menu</h2>
+              <div className="flex items-center gap-2">
+                <img src={logo.image} alt={`${logo.text} Logo`} className="h-10 w-10 rounded-full object-cover" />
+                <h2 className="text-white font-semibold">{logo.text}</h2>
+              </div>
               <button onClick={() => setMenuOpen(false)}>
                 <X className="text-white" />
               </button>

@@ -1,9 +1,11 @@
 import { useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import api from "../api/axios";
 import ProductSkeleton from "../Components/ProductSkeleton";
 import BackButton from "../Components/BackButton.jsx";
 import ProductCard from "../Components/ProductCard.jsx";
+
+const PRODUCTS_PER_BATCH = 8;
 
 const SearchPage = () => {
   const location = useLocation();
@@ -12,6 +14,14 @@ const SearchPage = () => {
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(PRODUCTS_PER_BATCH);
+  const loadMoreRef = useRef(null);
+
+  const visibleProducts = useMemo(
+    () => products.slice(0, visibleCount),
+    [products, visibleCount]
+  );
+  const hasMoreProducts = visibleCount < products.length;
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -21,6 +31,7 @@ const SearchPage = () => {
       try {
         const res = await api.get(`/products/search?q=${query}`);
         setProducts(res.data);
+        setVisibleCount(PRODUCTS_PER_BATCH);
       } catch (err) {
         console.log(err);
       } finally {
@@ -30,6 +41,27 @@ const SearchPage = () => {
 
     fetchResults();
   }, [query]);
+
+  useEffect(() => {
+    const loadMoreElement = loadMoreRef.current;
+
+    if (!loadMoreElement || !hasMoreProducts) return undefined;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisibleCount((currentCount) =>
+            Math.min(currentCount + PRODUCTS_PER_BATCH, products.length)
+          );
+        }
+      },
+      { rootMargin: "160px" }
+    );
+
+    observer.observe(loadMoreElement);
+
+    return () => observer.disconnect();
+  }, [hasMoreProducts, products.length, visibleCount]);
 
   return (
     <div className="min-h-screen bg-slate-950 text-white px-4 sm:px-6 lg:px-10 py-8">
@@ -75,10 +107,24 @@ const SearchPage = () => {
       {/* RESULTS */}
       {!loading && products.length > 0 && (
         <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
-          {products.map((p) => (
-            <ProductCard key={p._id} product={p} />
+          {visibleProducts.map((p, index) => (
+            <div
+              key={p._id}
+              className="animate-[fadeInUp_0.35s_ease_forwards] opacity-0"
+              style={{ animationDelay: `${Math.min(index % PRODUCTS_PER_BATCH, 6) * 45}ms` }}
+            >
+              <ProductCard product={p} />
+            </div>
           ))}
         </div>
+      )}
+
+      {!loading && hasMoreProducts && (
+        <div
+          ref={loadMoreRef}
+          className="mx-auto h-20 max-w-6xl"
+          aria-hidden="true"
+        />
       )}
     </div>
   );
